@@ -1,0 +1,178 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`Slack: Block Kit with escaped mrkdwn and <url|key> links 1`] = `
+{
+  "blocks": [
+    {
+      "text": {
+        "text": "Web: the last day",
+        "type": "plain_text",
+      },
+      "type": "header",
+    },
+    {
+      "text": {
+        "text": 
+"*Shipped*
+• <https://github.com/acme/web/pull/4|WEB-1> Fix the &lt;cart&gt; &amp; totals"
+,
+        "type": "mrkdwn",
+      },
+      "type": "section",
+    },
+    {
+      "text": {
+        "text": 
+"*Needs review*
+• <https://github.com/acme/web/pull/5|WEB-2> Dark mode"
+,
+        "type": "mrkdwn",
+      },
+      "type": "section",
+    },
+    {
+      "text": {
+        "text": 
+"*Next*
+• WEB-3 Gift cards"
+,
+        "type": "mrkdwn",
+      },
+      "type": "section",
+    },
+    {
+      "text": {
+        "text": "Spend: $4.10",
+        "type": "mrkdwn",
+      },
+      "type": "section",
+    },
+    {
+      "elements": [
+        {
+          "text": "Sent by Overhand",
+          "type": "mrkdwn",
+        },
+      ],
+      "type": "context",
+    },
+  ],
+  "text": "Web: the last day · Shipped: 1 · Needs review: 1 · Next: 1",
+}
+`;
+
+exports[`Teams: an Adaptive Card in a message envelope 1`] = `
+{
+  "attachments": [
+    {
+      "content": {
+        "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+        "body": [
+          {
+            "size": "Large",
+            "text": "Web: the last day",
+            "type": "TextBlock",
+            "weight": "Bolder",
+            "wrap": true,
+          },
+          {
+            "spacing": "Medium",
+            "text": "Shipped",
+            "type": "TextBlock",
+            "weight": "Bolder",
+            "wrap": true,
+          },
+          {
+            "spacing": "None",
+            "text": "• [WEB-1](https://github.com/acme/web/pull/4) Fix the <cart> & totals",
+            "type": "TextBlock",
+            "wrap": true,
+          },
+          {
+            "spacing": "Medium",
+            "text": "Needs review",
+            "type": "TextBlock",
+            "weight": "Bolder",
+            "wrap": true,
+          },
+          {
+            "spacing": "None",
+            "text": "• [WEB-2](https://github.com/acme/web/pull/5) Dark mode",
+            "type": "TextBlock",
+            "wrap": true,
+          },
+          {
+            "spacing": "Medium",
+            "text": "Next",
+            "type": "TextBlock",
+            "weight": "Bolder",
+            "wrap": true,
+          },
+          {
+            "spacing": "None",
+            "text": "• WEB-3 Gift cards",
+            "type": "TextBlock",
+            "wrap": true,
+          },
+          {
+            "spacing": "Medium",
+            "text": "Spend: $4.10",
+            "type": "TextBlock",
+            "wrap": true,
+          },
+        ],
+        "type": "AdaptiveCard",
+        "version": "1.4",
+      },
+      "contentType": "application/vnd.microsoft.card.adaptive",
+      "contentUrl": null,
+    },
+  ],
+  "type": "message",
+}
+`;
+
+exports[`Discord: one embed, fields per section, no mentions 1`] = `
+{
+  "allowed_mentions": {
+    "parse": [],
+  },
+  "embeds": [
+    {
+      "color": 9417983,
+      "fields": [
+        {
+          "name": "Shipped",
+          "value": "• [WEB-1](https://github.com/acme/web/pull/4) Fix the \\<cart\\> & totals",
+        },
+        {
+          "name": "Needs review",
+          "value": "• [WEB-2](https://github.com/acme/web/pull/5) Dark mode",
+        },
+        {
+          "name": "Next",
+          "value": "• WEB-3 Gift cards",
+        },
+        {
+          "name": "​",
+          "value": "Spend: $4.10",
+        },
+      ],
+      "footer": {
+        "text": "Sent by Overhand",
+      },
+      "title": "Web: the last day",
+    },
+  ],
+}
+`;
+
+exports[`Markdown: titles can't forge links; a quiet summary says so 1`] = `
+"**Api: the last day**
+
+**Shipped**
+- [API-7](https://github.com/acme/api/pull/9) Rate limits
+
+**Blocked**
+- API-8 Which \\[database\\]?"
+`;

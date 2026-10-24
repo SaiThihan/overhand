@@ -1,0 +1,9 @@
+{
+  // The installer's address, get.overhand.dev. Deploy: cd site/get && bunx wrangler@4.151.1 deploy
+  "name": "overhand-get",
+  "main": "worker.ts",
+  "compatibility_date": "2026-10-01",
+  "routes": [{ "pattern": "get.overhand.dev", "custom_domain": true }],
+  "workers_dev": false,
+  "rules": [{ "type": "Text", "globs": ["**/*.sh"], "fallthrough": false }]
+}

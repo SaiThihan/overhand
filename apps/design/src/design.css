@@ -1,0 +1,27 @@
+/* The catalog draws with the dashboard's own stylesheet: the same tokens, surfaces and classes, nothing of its own. */
+@import "../../web/src/index.css";
+/* Tailwind finds the classes in the dashboard's components and in the catalog's pages */
+@source "../../web/src";
+@source "./";
+
+html,
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* a state's stage: the dashboard's background, ruled off with a hairline */
+.stage {
+  border: 1px solid var(--hair);
+  border-radius: var(--radius-pane);
+  background: var(--background);
+  padding: 1.25rem;
+}
+.stage-frame {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--hair);
+  border-radius: var(--radius-pane);
+  background: var(--background);
+}
+

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en" class="paper">
+<head>
+{{> head}}
+<title>{{name}} docs</title>
+<meta name="description" content="How to install {{name}}, set up your first project, and run your agents with it, one short page per thing you do.">
+<link rel="canonical" href="{{url}}/docs/">
+</head>
+<body>
+{{> header}}
+<main id="main" class="docs">
+  <section class="wrap hero" aria-labelledby="hook">
+    <p class="kick">Docs</p>
+    <h1 id="hook">How to use {{name}}.</h1>
+    <p class="lede">One short page for each thing you do, from installing it to answering your agents from your phone.</p>
+  </section>
+
+  <section class="wrap facts-sec" aria-label="Docs pages">
+    {{docsList}}
+  </section>
+
+  <section class="wrap facts-sec" aria-labelledby="h-more">
+    <h2 id="h-more">For agents, and for the details.</h2>
+    <ul class="facts">
+      <li><b><a href="{{root}}setup.md">setup.md</a></b> The steps a coding agent follows to set {{name}} up for you.</li>
+      <li><b><a href="{{root}}llms.txt">llms.txt</a></b> These pages as a list a model can read.</li>
+      <li><b><a href="{{root}}llms-full.txt">llms-full.txt</a></b> Every docs page as Markdown, in one file.</li>
+      <li><b>Any page as Markdown</b> Swap <code>.html</code> for <code>.md</code> in its address, as in <a href="{{root}}docs/guard.md">docs/guard.md</a>.</li>
+      <li><b><a href="{{root}}skill.md">skill.md</a></b> An agent skill: how any coding agent installs {{name}}, checks on it, answers its questions and finds details. In the repo as <a href="{{repo}}/blob/main/skills/overhand/SKILL.md">skills/overhand/SKILL.md</a>.</li>
+      <li><b>Free to copy</b> The docs, the skill and the llms files are <a href="{{repo}}/blob/main/LICENSE-docs">CC0 1.0</a>.</li>
+      <li><b><a href="{{root}}under-the-hood.html">Under the hood</a></b> Where {{name}} runs, what the relay sees, the guard and {{modeShip}}'s rules.</li>
+      <li><b><a href="{{root}}docs/design/">Design catalog</a></b> Every part of {{name}} on sample data.</li>
+    </ul>
+  </section>
+</main>
+{{> footer}}
+</body>
+</html>

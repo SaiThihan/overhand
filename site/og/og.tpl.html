@@ -1,0 +1,17 @@
+<!doctype html>
+<!-- Source of site/public/og.png (the link preview): the mark and the hook on the default paper, nothing else. Build
+     with `bun site/build.ts`, serve site/ on :4601 and run `bun site/og/render.mjs`. -->
+<html lang="en"><head><meta charset="utf-8"><title>{{name}} preview</title>
+<link rel="stylesheet" href="{{root}}fonts/atkinson.css">
+<link rel="stylesheet" href="{{root}}system.css">
+<link rel="stylesheet" href="{{root}}site.css">
+<style>
+  body { width: 1200px; height: 630px; overflow: hidden; margin: 0; padding: 88px 96px; box-sizing: border-box;
+    display: flex; flex-direction: column; justify-content: space-between; background: var(--ink-1); color: var(--ink-12); }
+  .mark { display: flex; align-items: center; gap: 14px; font: var(--t-h3-weight) 32px/1 var(--font-body); letter-spacing: var(--t-display-track); }
+  .mark svg { width: 44px; height: 44px; }
+  h1 { margin: 0; max-width: 11em; font: var(--t-display-weight) 92px/1.02 var(--font-body); letter-spacing: var(--t-display-track); text-wrap: balance; }
+</style></head><body>
+<div class="mark">{{markLarge}}{{name}}</div>
+<h1>{{tagline}}</h1>
+</body></html>

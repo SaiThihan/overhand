@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en" class="paper">
+<head>
+{{> head}}
+<title>{{name}} for one developer with many projects</title>
+<meta name="description" content="A day job, a side project and a library you maintain. {{name}} keeps agents working on all of them, each by its own rules, and calls you only when one needs a decision.">
+<link rel="canonical" href="{{url}}/for/solo.html">
+<meta property="og:image" content="{{url}}/og.png?v=2026-10-22c">
+</head>
+<body>
+{{> header}}
+<main id="main">
+  <section class="wrap hero" aria-labelledby="hook">
+    <p class="kick">{{forLine}}</p>
+    <h1 id="hook">Every project moving. Not just the one you're watching.</h1>
+    <p class="lede">The day job, a side project, the library with forty open issues. You can watch one terminal at a time. {{name}} keeps an agent on each of them and shows you all of it on one screen.</p>
+  </section>
+  <div class="wrap opening">
+    <div class="piece" data-piece="cast" data-max="3" data-title="Every agent on every sample project, and what each one is doing, live"></div>
+  </div>
+
+  <div class="wrap">
+    <article class="block" aria-labelledby="p1">
+      <div class="say enter">
+        <h2 id="p1">"I can only watch one terminal at a time."</h2>
+        <p>You don't watch any of them. Questions from every project land in one list, most with the answer the agent recommends. Answer one and that agent carries on.</p>
+      </div>
+      <div class="piece" data-piece="needs" data-max="3" data-title="Needs you, live on sample data: one question waiting, with its recommended answer"></div>
+    </article>
+
+    <article class="block" aria-labelledby="p2">
+      <div class="say enter">
+        <h2 id="p2">"Each repo wants a different leash."</h2>
+        <p>Set it once per project: {{modeWatch}} on the library, {{modePropose}} on the day job, {{modeAct}} or {{modeShip}} on your own app. Agents read the rule before they start.</p>
+      </div>
+      <div class="piece" data-piece="rules" data-title="Each sample project's rule, live: one on {{modeShip}}, and one moving from {{modeAct}} to {{modePropose}}"></div>
+    </article>
+
+    <article class="block" aria-labelledby="p3">
+      <div class="say enter">
+        <h2 id="p3">"Done shouldn't mean I check everything."</h2>
+        <p>Each pull request arrives with the checks it ran. A red check gets a fix round before it reaches you.</p>
+      </div>
+      <div class="piece" data-piece="inflight" data-title="In flight, live on sample data: a red check turns green after a fix round"></div>
+    </article>
+  </div>
+
+  <section class="wrap facts-sec enter" aria-labelledby="more">
+    <h2 id="more">Built for more than one repo.</h2>
+    <ul class="facts">
+      <li><b>Its own agent and account</b> Per project: your subscription on one, the company's account on another, a local model on a third.</li>
+      <li><b>Quiet mode</b> {{quietMode}}</li>
+    </ul>
+  </section>
+{{> usecase}}
+</main>
+{{> footer}}
+<script type="module" src="{{root}}home.js"></script>
+<script src="{{root}}pieces.js" defer></script>
+</body>
+</html>

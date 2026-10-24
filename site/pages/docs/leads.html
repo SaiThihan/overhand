@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en" class="paper">
+<head>
+{{> head}}
+{{> docmeta}}
+</head>
+<body>
+{{> header}}
+<main id="main" class="docs">
+{{> dochero}}
+  <div class="wrap">
+    <section class="block hood" id="what" aria-labelledby="h-what">
+      <h2 id="h-what">A lead looks after a project.</h2>
+      <ul class="facts">
+        <li><b>A long-running session</b> One agent session that works a whole project and asks you only what takes a person.</li>
+        <li><b>Asleep until there's work</b> Each lead wakes when its own kind of work shows up on its project, and works only on that.</li>
+        <li><b>Within the project's mode</b> A lead goes only as far as the project's <a href="modes.html">mode</a> allows.</li>
+        <li><b>Kept running</b> While a lead is On, {{name}} restarts it after it exits, gives up after repeated crashes, and waits while its account is at its usage limit.</li>
+      </ul>
+    </section>
+
+    <section class="block hood" id="ready" aria-labelledby="h-ready">
+      <h2 id="h-ready">Ready-made leads.</h2>
+      {{leadTemplates}}
+      <p class="fine">A project's view in Crew suggests them from its own work, each with the count behind it. The first click previews what it watches and does; <em>{{w.leadPreviewStart}}</em> is the second.</p>
+    </section>
+
+    <section class="block hood" id="way" aria-labelledby="h-way">
+      <h2 id="h-way">How every lead works.</h2>
+      <ul class="facts">
+        <li><b>Whatever its goal</b> Every lead's prompt, ready-made, generic or your own skill, carries the same lines, written once in {{name}}. {{wayOfWorking}}</li>
+      </ul>
+    </section>
+
+    <section class="block hood" id="questions" aria-labelledby="h-questions">
+      <h2 id="h-questions">When a lead asks.</h2>
+      <ul class="facts">
+        <li><b>Under Needs you</b> Answer in place, from your phone's notification, or from a terminal with <code>overhand answer &lt;lead&gt; "your answer"</code>, naming the lead by its key or label. <code>--default</code> goes with the default it gave.</li>
+        <li><b>From any terminal</b> <code>overhand answer</code> goes through the running daemon, the same as answering on the dashboard. So your terminal session, or an agent's, can unblock a lead it settled a question for. {{name}} never reads your other sessions.</li>
+        <li><b>Its default</b> A question ends with what the lead will do if nobody answers. After the wait set for that lead (4 hours unless you change it in Settings → Leads), {{name}} goes with it and tells you. A question with no default, or a wait of 0, waits for you.</li>
+        <li><b>Answered somewhere else</b> <em>{{w.answeredElsewhere}}</em> resumes the lead when you settled it outside {{name}}.</li>
+      </ul>
+    </section>
+
+    <section class="block hood" id="own" aria-labelledby="h-own">
+      <h2 id="h-own">Your own lead.</h2>
+      <ul class="facts">
+        <li><b>The generic lead</b> Add one in Settings → Leads with no instruction of its own: it works the project's open issues and pull requests in priority order, with its notes kept in <code>~/.overhand</code>, never in your repo.</li>
+        <li><b>A project's own lead skill</b> Point it at the skill, and have the skill keep a lock file and a questions file so {{name}} can supervise it. <a href="{{repo}}/blob/main/docs/leads.md">docs/leads.md</a> has both formats and a snippet to paste.</li>
+      </ul>
+    </section>
+  </div>
+{{docsNav}}
+</main>
+{{> footer}}
+</body>
+</html>

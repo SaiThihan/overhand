@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en" class="paper">
+<head>
+{{> head}}
+<title>{{name}} for freelancers and studios with client work</title>
+<meta name="description" content="Several clients, several accounts, different expectations. {{name}} gives each client's projects their own rules and agent account, and a work report you can send.">
+<link rel="canonical" href="{{url}}/for/studios.html">
+<meta property="og:image" content="{{url}}/og.png?v=2026-10-22c">
+</head>
+<body>
+{{> header}}
+<main id="main">
+  <section class="wrap hero" aria-labelledby="hook">
+    <p class="kick">{{forLine}}</p>
+    <h1 id="hook">Every client on their own rules, their own account.</h1>
+    <p class="lede">One client wants pull requests, one wants drafts only, one wants nothing done without a look first. Set it per project, and the Online shop's agents never act like the Booking app's.</p>
+  </section>
+  <div class="wrap opening">
+    <div class="piece" data-piece="rules" data-title="Each client project's rule, live on sample data: change one and see what its agents will do"></div>
+  </div>
+
+  <div class="wrap">
+    <article class="block" aria-labelledby="p1">
+      <div class="say enter">
+        <h2 id="p1">"The client's work should run on the client's account."</h2>
+        <p>Each project runs on the agent account you give it. A client's API key pays for that client's work, and your own subscription stays yours.</p>
+      </div>
+      <div class="piece" data-piece="cast" data-max="3" data-title="The agents on each sample client project, and what each is doing, live"></div>
+    </article>
+
+    <article class="block" aria-labelledby="p2">
+      <div class="say enter">
+        <h2 id="p2">"Nothing reaches a client I haven't seen."</h2>
+        <p>Every pull request shows its checks, and a preview to click when your repo posts one. Status updates go only to the channel set on that project, and a secret or another client's name in one holds it for you.</p>
+      </div>
+      <div class="piece" data-piece="review" data-title="A sample client pull request under review, live: why it waits, the preview to point at, what to check before merging and the proof"></div>
+    </article>
+
+    <article class="block" aria-labelledby="p3">
+      <div class="say enter">
+        <h2 id="p3">"The invoice needs a story."</h2>
+        <p>A work report per project, for any dates: what was done, its pull requests and the time agents spent. Send it weekly to the client's channel, with or without the cost.</p>
+      </div>
+      <div class="piece" data-piece="morning" data-title="The morning update, live on sample data: what happened on each project, in plain words"></div>
+    </article>
+  </div>
+{{> usecase}}
+</main>
+{{> footer}}
+<script type="module" src="{{root}}home.js"></script>
+<script src="{{root}}pieces.js" defer></script>
+</body>
+</html>

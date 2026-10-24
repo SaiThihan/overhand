@@ -1,0 +1,13 @@
+{
+  "name": "@overhand/themes",
+  "version": "0.0.1",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./words": "./src/words.ts",
+    "./brand": "./src/brand.ts",
+    "./system": "./src/system.ts"
+  }
+}

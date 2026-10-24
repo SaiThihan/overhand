@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en" class="paper">
+<head>
+{{> head}}
+{{> docmeta}}
+</head>
+<body>
+{{> header}}
+<main id="main" class="docs">
+{{> dochero}}
+  <div class="wrap">
+    <section class="block hood" id="stays" aria-labelledby="h-stays">
+      <h2 id="h-stays">What stays.</h2>
+      <ul class="facts">
+        <li><b>Your code and your agents' work</b> Repos, diffs, transcripts and logs stay on your computer, under <code>~/.overhand</code> and your own folders.</li>
+        <li><b>Your keys</b> In your keychain, or the file you opted in to. <a href="{{root}}under-the-hood.html#machine">Where things run</a>.</li>
+      </ul>
+    </section>
+
+    <section class="block hood" id="leaves" aria-labelledby="h-leaves">
+      <h2 id="h-leaves">What leaves, and where to.</h2>
+      <ul class="facts">
+        <li><b>To your model</b> What your agents send to the model provider you chose, just as they do without {{name}}. A local model's prompts stay on your computer.</li>
+        <li><b>To GitHub and your tools</b> Through your own sign-ins: <code>gh</code> for pull requests and issues, and any tracker, error service or notification you connect, such as ntfy or a status update's webhook.</li>
+        <li><b>A release check</b> Once a day {{name}} asks GitHub whether a newer release is out.</li>
+        <li><b>On Pro and Team</b> Your sign-in, your computer's link and your plan go to the relay at {{relayHost}}; on Team, the team's metadata too. <a href="{{root}}under-the-hood.html#relay">What the relay does and doesn't see</a>.</li>
+        <li><b>On this website</b> Cookieless page counts from Cloudflare Web Analytics, with no personal data.</li>
+      </ul>
+      <p class="fine">What the hosted services keep, and your rights, are in the <a href="{{root}}privacy.html">privacy policy</a>.</p>
+    </section>
+  </div>
+{{docsNav}}
+</main>
+{{> footer}}
+</body>
+</html>

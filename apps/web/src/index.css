@@ -1,0 +1,1233 @@
+@import "../../../packages/themes/system.css";
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* shadcn's dark: variants follow the .dark class ThemeProvider toggles on <html> with the appearance. */
+@custom-variant dark (&:is(.dark *));
+/* phone landscape and other short screens */
+@custom-variant short (@media (max-height: 500px) and (orientation: landscape));
+/* a tablet held upright: phone-style places, but room for panes two-up */
+@custom-variant tablet (@media (min-width: 768px) and (min-height: 501px));
+
+/* A small control (needs position: relative/absolute) answers clicks 24px round its centre (WCAG 2.5.8), and taps on
+   touch 40px round it; it looks the same. */
+@utility hit-area {
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, 24px);
+    height: max(100%, 24px);
+    transform: translate(-50%, -50%);
+  }
+  @media (pointer: coarse) {
+    &::before {
+      width: max(100%, 40px);
+      height: max(100%, 40px);
+    }
+  }
+}
+
+/* Every colour comes from the active theme's tokens, set on <html> by ThemeProvider. */
+/* wide screens: 2560 and up, and 3440/5120 ultra-wides (the layout system: lib/layout.ts, docs/design-system.md) */
+@theme {
+  --breakpoint-3xl: 137.5rem;
+  --breakpoint-4xl: 200rem;
+  /* a transition-* utility is feedback: the system's instant timing and arrive curve, not Tailwind's 150ms ease */
+  --default-transition-duration: var(--m-instant);
+  --default-transition-timing-function: var(--m-arrive);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-bad: var(--bad);
+  --font-display: var(--font-display);
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-mono);
+  --color-you: var(--you);
+  --color-you-fill: var(--you-fill);
+  --color-you-ink: var(--you-ink);
+  /* controls (buttons, inputs, menus' items) take the control radius; panes and cards the surface radius */
+  --radius-sm: calc(var(--radius-control) - 2px);
+  --radius-md: var(--radius-control);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.3);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  /* reading text in a drawer or a phone's place stops near 72 characters a line (33em; ch is a digit, wider than the average letter) */
+  [data-slot="sheet-content"] p,
+  .place-body p {
+    max-width: 33em;
+  }
+  html,
+  body {
+    @apply bg-background text-foreground;
+  }
+  /* a grid without columns of its own is one column that fills its box and never grows past it: otherwise its implicit
+     column is as wide as its longest unbreakable content (a path, a long name, a truncated line), and every card in it
+     spills out of its pane. grid-cols-* and inline styles set their own. */
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  body {
+    font-family: var(--font-body);
+    background-image: var(--backdrop);
+    background-attachment: fixed;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+  }
+}
+
+/*
+ * The HUD: pane, button and live-indicator classes every world lays out with. Its chrome (chamfered glass panes with a
+ * lit bevel, hazard-striped danger) belongs only to the hidden worlds, scoped to them below; the house chrome restyles
+ * the rest at the bottom of this file. Timings are the system's (--m-*): a world may retint, never retime.
+ */
+@layer components {
+  .hud-veil {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse at 50% 40%, transparent 50%, color-mix(in srgb, var(--background) 85%, transparent) 100%),
+      repeating-linear-gradient(0deg, color-mix(in srgb, var(--primary) 2%, transparent) 0 1px, transparent 1px 4px);
+  }
+
+  .hud-pane {
+    --cut: 14px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-width: 0;
+    padding: var(--pane-pad);
+    color: var(--card-foreground);
+  }
+  .hud-pane > header h2 {
+    font: 600 0.9rem var(--font-display);
+    letter-spacing: 0.06em;
+    color: var(--foreground);
+  }
+
+  .hud-btn {
+    --cut: 8px;
+    color: var(--primary);
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--primary) 13%, transparent),
+      color-mix(in srgb, var(--primary) 3%, transparent)
+    );
+    border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent);
+    font-family: var(--font-body);
+    letter-spacing: 0.05em;
+    clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+    transition:
+      background-color var(--m-instant),
+      color var(--m-instant),
+      box-shadow var(--m-instant);
+  }
+  .hud-btn:hover {
+    color: var(--foreground);
+    background-color: color-mix(in srgb, var(--primary) 18%, transparent);
+    box-shadow: inset 0 0 18px color-mix(in srgb, var(--primary) 25%, transparent);
+  }
+  /* clip-path clips anything drawn outside, so the focus ring goes inside */
+  .hud-btn:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: -4px;
+  }
+  /* primary: the one next step on a surface, filled in the world's own primary */
+  .hud-btn-primary {
+    color: var(--primary-foreground);
+    background: var(--primary);
+    border-color: var(--primary);
+    font-weight: 600;
+  }
+  .hud-btn-primary:hover {
+    color: var(--primary-foreground);
+    background-color: color-mix(in srgb, var(--primary) 82%, var(--foreground));
+    box-shadow: 0 0 18px color-mix(in srgb, var(--primary) 40%, transparent);
+  }
+  /* answer: the reply to something that waits on you */
+  .hud-btn-answer,
+  .hud-btn-answer:hover {
+    color: var(--you-ink);
+    background: var(--you-fill);
+    border-color: var(--you-fill);
+    font-weight: 600;
+  }
+  /* state: pause and resume only */
+  .hud-btn-state {
+    color: var(--warn);
+    border-color: color-mix(in srgb, var(--warn) 50%, transparent);
+    background: color-mix(in srgb, var(--warn) 8%, transparent);
+  }
+  .hud-btn-state:hover {
+    color: var(--warn);
+    background-color: color-mix(in srgb, var(--warn) 16%, transparent);
+    box-shadow: inset 0 0 18px color-mix(in srgb, var(--warn) 22%, transparent);
+  }
+
+  .hud-glow {
+    text-shadow: 0 0 18px color-mix(in srgb, var(--primary) 55%, transparent);
+  }
+  /* the live indicators step (about 5 changes a second) instead of easing: a smooth infinite animation makes the
+     compositor redraw every frame, and in the themed worlds each frame recomposited the scene, lighting and glass
+     behind it; a step that hasn't changed draws nothing. An urgent need throbs for its first minute, then holds
+     steady: left on all night, it kept a dashboard at rest recompositing a few times a second (release/soak.ts) */
+  .hud-throb {
+    animation: hud-throb var(--m-loop) steps(4) 38;
+  }
+
+  /* data that arrives: bars rise, meter cells light one after another */
+  .hud-rise {
+    transform-origin: bottom;
+    animation: hud-rise var(--m-slow) var(--m-arrive) both;
+    animation-delay: calc(var(--n, 0) * var(--m-stagger) + var(--m-base));
+  }
+
+  /* the wings of the bridge: glass turned toward you, scrolling on their own, fading at the edges */
+  .wing {
+    /* down only: a story's scrim reaches past the wing's sides, which made it scroll sideways too */
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--primary) 25%, transparent) transparent;
+    mask-image: linear-gradient(180deg, transparent, black 12px, black calc(100% - 28px), transparent);
+  }
+  /* reading text over the scene: a soft local scrim behind the text only, so it keeps its contrast and the world shows round it */
+  /* positioned, so the scrim's ::before sits round this text only: unpositioned, it spanned the nearest positioned
+     ancestor (the whole window) and painted the background over the story above it */
+  .scrim {
+    position: relative;
+    isolation: isolate;
+  }
+  .scrim::before {
+    content: "";
+    position: absolute;
+    inset: -1.25rem -2.5rem;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--background) 78%, transparent) 55%, transparent);
+  }
+  /* the day so far draws in to now as the ribbon arrives */
+  .hud-sweep {
+    transform-origin: left;
+    animation: hud-sweep calc(var(--m-slow) * 2) var(--m-arrive) var(--m-base) both;
+  }
+  .hud-cell {
+    animation: hud-cell var(--m-base) var(--m-arrive) both;
+    animation-delay: calc(var(--n, 0) * var(--m-stagger) / 2 + var(--m-base));
+  }
+
+  /* the hidden worlds' own chrome, as it was; they return after launch */
+  :root:is([data-theme="observatory"], [data-theme="transit"], [data-theme="koi"]) {
+    .hud-pane {
+      background: linear-gradient(
+        160deg,
+        color-mix(in srgb, var(--primary) 9%, transparent),
+        color-mix(in srgb, var(--primary) 2.5%, transparent) 38%,
+        color-mix(in srgb, var(--background) 55%, transparent)
+      );
+      border: 1px solid color-mix(in srgb, var(--primary) 14%, transparent);
+      backdrop-filter: blur(12px) saturate(140%);
+      clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+      animation: hud-on 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+      animation-delay: calc(var(--i, 0) * 80ms);
+    }
+    /* the lit bevel, top left, and its dim twin bottom right; clip-path eats the border on the diagonals */
+    .hud-pane::before,
+    .hud-pane::after {
+      content: "";
+      position: absolute;
+      width: calc(var(--cut) * 1.42);
+      height: 1px;
+    }
+    .hud-pane::before {
+      left: 0;
+      top: var(--cut);
+      transform-origin: left;
+      transform: rotate(-45deg);
+      background: var(--primary);
+      box-shadow: 0 0 10px var(--primary);
+      animation: hud-bevel 0.5s ease-out both;
+      animation-delay: calc(var(--i, 0) * 80ms);
+    }
+    .hud-pane::after {
+      right: 0;
+      bottom: var(--cut);
+      transform-origin: right;
+      transform: rotate(-45deg);
+      background: color-mix(in srgb, var(--primary) 30%, transparent);
+    }
+    /* danger: stopping or removing; hazard-striped so it never reads as the world's primary */
+    .hud-btn-danger {
+      color: #fff;
+      border-color: color-mix(in srgb, var(--bad) 75%, transparent);
+      background: repeating-linear-gradient(
+        135deg,
+        var(--destructive) 0 10px,
+        color-mix(in srgb, var(--destructive) 82%, #000) 10px 20px
+      );
+    }
+    .hud-btn-danger:hover {
+      color: #fff;
+      background-color: var(--destructive);
+      box-shadow: 0 0 16px color-mix(in srgb, var(--bad) 45%, transparent);
+    }
+  }
+}
+
+@keyframes hud-on {
+  from {
+    opacity: 0;
+    clip-path: polygon(var(--cut) 0, 100% 0, 100% 0, calc(100% - var(--cut)) 0, 0 0, 0 0);
+  }
+  40% {
+    opacity: 1;
+  }
+}
+@keyframes hud-bevel {
+  from {
+    opacity: 0;
+    width: 0;
+  }
+}
+@keyframes hud-throb {
+  50% {
+    opacity: 0.35;
+  }
+}
+@keyframes hud-rise {
+  from {
+    transform: scaleY(0);
+  }
+}
+@keyframes hud-sweep {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes hud-cell {
+  from {
+    opacity: 0;
+  }
+}
+
+/*
+ * Motion: one vocabulary for every theme (docs/design-system.md, "Motion"). Transform and opacity only; nothing loops
+ * except live indicators; under reduced motion each pattern is an instant state change. A world may retint the effects
+ * (--m-tint, --m-lock) but never retimes them. The clock and curves (--m-instant … --m-rise) are system.css's.
+ */
+:root {
+  /* a pane's padding: the system's, less on a phone's narrower pane (docs/design-system.md, "Spacing and radius") */
+  --pane-pad: var(--space-pane);
+  --m-tint: var(--primary);
+  --m-lock: var(--ok);
+}
+@media (max-width: 47.99rem) {
+  :root {
+    --pane-pad: var(--space-pane-phone);
+  }
+}
+/* panes in two balanced columns (the browser evens their heights), read down the first then the second; one column on a
+   phone. A pane never breaks across them. */
+.balance > * {
+  break-inside: avoid;
+  margin-bottom: var(--space-gap);
+}
+.balance > :last-child {
+  margin-bottom: 0;
+}
+@media (min-width: 48rem) {
+  .balance {
+    columns: 2;
+    column-gap: var(--space-gap);
+  }
+}
+/* enter: fade and rise; list build: the same, each child --i staggers later */
+.m-enter,
+.m-stagger > * {
+  animation: m-enter var(--m-base) var(--m-arrive) backwards;
+  animation-delay: calc(var(--i, 0) * var(--m-stagger));
+}
+/* a bridge that has reflowed (a place docked beside it) moves its panes without replaying their entrance */
+[data-reflowed] .hud-pane,
+[data-reflowed] .m-enter {
+  animation: none !important;
+}
+/* leave: fade, faster */
+.m-leave {
+  pointer-events: none;
+  animation: m-leave var(--m-instant) var(--m-leave) forwards;
+}
+/* lock-on: a ring contracts onto the item, then its tick (.m-tick) springs in */
+.m-lockon {
+  position: relative;
+}
+.m-lockon::after {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border: 1.5px solid var(--m-lock);
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+  animation: m-lock-ring var(--m-slow) var(--m-arrive);
+}
+.m-lockon .m-tick {
+  animation: m-lock-tick var(--m-base) var(--m-spring) calc(var(--m-base) * 0.75) backwards;
+}
+/* pulse: live and working only */
+.m-pulse {
+  /* stepped (four steps each way), not eased: see .hud-throb */
+  animation: m-pulse var(--m-loop) steps(4) infinite;
+}
+/* a live piece's one focus (focusOnce, the site's pages): the ring its lifted card wears, still and unseen until
+   focusOnce fades it in and out (a Web Animation on its opacity); tight, so the piece's frame never clips it */
+.m-ring {
+  position: relative;
+}
+.m-ring::after {
+  content: "";
+  position: absolute;
+  inset: calc(var(--space-gap) / -6);
+  border-radius: var(--radius-card);
+  box-shadow: var(--lift-ring);
+  opacity: 0;
+  pointer-events: none;
+}
+/* the loader: your square slides over the work and back on the arrive curve, holding at each end (Boot, Logo.tsx) */
+.m-handover {
+  animation: m-handover var(--m-handover) var(--m-arrive) infinite;
+}
+/* dialogs (the command bar) open on the same clock */
+.m-dialog[data-state="open"] {
+  --tw-duration: var(--m-base);
+  --tw-ease: var(--m-arrive);
+  --tw-enter-scale: 0.98;
+  --tw-enter-translate-y: var(--m-rise);
+}
+.m-dialog[data-state="closed"] {
+  --tw-duration: var(--m-instant);
+  --tw-ease: var(--m-leave);
+  --tw-exit-scale: 1;
+}
+/* drawers and their scrim: a panel travels further than a dialog, so it takes a little longer to arrive; it leaves fast */
+[data-slot="sheet-content"][data-state="open"],
+[data-slot="sheet-overlay"][data-state="open"] {
+  --tw-duration: calc(var(--m-base) * 1.25);
+  --tw-ease: var(--m-arrive);
+}
+[data-slot="sheet-content"][data-state="closed"],
+[data-slot="sheet-overlay"][data-state="closed"] {
+  --tw-duration: calc(var(--m-instant) * 1.5);
+  --tw-ease: var(--m-leave);
+}
+/* popovers and menus open on the base clock and close on the instant one; a tooltip is only ever instant */
+[data-slot="popover-content"][data-state="open"],
+[data-slot="select-content"][data-state="open"] {
+  --tw-duration: var(--m-base);
+  --tw-ease: var(--m-arrive);
+}
+[data-slot="popover-content"][data-state="closed"],
+[data-slot="select-content"][data-state="closed"],
+[data-slot="tooltip-content"] {
+  --tw-duration: var(--m-instant);
+  --tw-ease: var(--m-leave);
+}
+/* toasts arrive and leave on the same clock */
+.m-toast {
+  transition-duration: var(--m-base) !important;
+  transition-timing-function: var(--m-arrive) !important;
+}
+@keyframes m-enter {
+  from {
+    opacity: 0;
+    transform: translateY(var(--m-rise));
+  }
+}
+@keyframes m-leave {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes m-lock-ring {
+  0% {
+    opacity: 0;
+    transform: scale(2.2);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+@keyframes m-lock-tick {
+  from {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+}
+@keyframes m-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+@keyframes m-handover {
+  0%,
+  15%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50%,
+  65% {
+    transform: translate(calc(var(--lift) * -1), var(--lift));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .m-lockon::after,
+  .m-ring::after {
+    display: none;
+  }
+}
+
+/* A count beside a pane title, in the colour of the state it counts. */
+.pane-count {
+  min-width: 1.25rem;
+  padding: 0 0.375rem;
+  border-radius: var(--radius-control);
+  font: 600 11px/1.125rem var(--font-body);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: normal;
+  text-align: center;
+  color: var(--c);
+  background: color-mix(in srgb, var(--c) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--c) 35%, transparent);
+}
+/* Work's board on a computer: a column with cards is never narrower than a card of real length reads at, and shares
+   what's left; an empty column shrinks to its heading; when they can't all fit, the board scrolls sideways itself. */
+.work-board {
+  --work-col: 14rem;
+  --work-col-empty: 9rem;
+}
+@media (width >= 64rem) {
+  .work-board {
+    display: flex;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+  .work-board > .work-col {
+    flex: 1 1 var(--work-col);
+    min-width: var(--work-col);
+  }
+  .work-board > .work-col[data-empty] {
+    flex: 0 0 var(--work-col-empty);
+    min-width: var(--work-col-empty);
+  }
+}
+/* on paper a 14% tint darkens the pill enough to take its 11px number below AA: a lighter tint, a deeper number */
+:root[data-appearance="light"] .pane-count {
+  color: color-mix(in srgb, var(--c) 80%, var(--foreground));
+  background: color-mix(in srgb, var(--c) 8%, transparent);
+}
+
+/*
+ * Night Watch, the house theme (Overhand): the HUD's layout without its chrome, drawn from the ink scale (--ink-1 … 12,
+ * set by ThemeProvider) and four state colours. Unlayered, so it wins over the utilities it restyles. Spec and rules:
+ * docs/design-system.md.
+ */
+:root[data-chrome="house"] {
+  /* no lift, no shadow: a surface is an ink step and a hairline */
+  --lift: none;
+  --tip-bg: var(--ink-12);
+  --tip-fg: var(--ink-1);
+
+  /* numbers line up; set per element, since the grotesk's tabular figures widen its punctuation too */
+  time,
+  .readout,
+  .font-mono {
+    font-variant-numeric: tabular-nums;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--ink-12) 22%, transparent);
+  }
+
+  /* type: sentence case, no letter-spaced labels */
+  [class*="tracking-"] {
+    letter-spacing: normal;
+  }
+  /* display sizes track tighter: one family, so size, weight and tracking make the hierarchy */
+  h1,
+  h2 {
+    letter-spacing: -0.02em;
+  }
+  .uppercase {
+    text-transform: none;
+  }
+  /* readouts are instruments: mono numbers, set tight */
+  .readout {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+  }
+  /* the greeting is the one headline: the display face (or the world's own), tight */
+  h1.readout {
+    font-family: var(--font-greeting);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    font-size: clamp(2rem, 1.6rem + 1vw, 2.75rem);
+  }
+  /* the brief and the story read like a page: the UI face, a size up, open leading, a softer ink; a fact in it is ink
+     at a heavier weight, what waits on you is you */
+  .story-text {
+    font-family: var(--font-body);
+    font-size: 1.0625rem;
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--ink-11);
+  }
+  .story-text :is(button, span)[style*="--c"] {
+    font-family: var(--font-body);
+    font-weight: 500;
+    color: var(--ink-12);
+    text-shadow: none;
+  }
+  .story-text :is(button, span)[style*="--warn"] {
+    color: var(--you);
+  }
+  .story-text :is(button, span)[style*="--bad"] {
+    color: var(--bad);
+  }
+
+  /* no glows: live is light, not a halo */
+  .hud-glow,
+  [class*="text-shadow"] {
+    text-shadow: none;
+  }
+  .dot {
+    box-shadow: none !important; /* Dot sets its glow inline */
+  }
+  [class*="shadow-"] {
+    box-shadow: none;
+  }
+  [class*="drop-shadow-["] {
+    filter: none;
+  }
+  .hud-veil {
+    display: none;
+  }
+  .hud-throb {
+    animation: none;
+  }
+  /* with no glass or glow behind them the house's live dots are cheap to ease, and stepping them measured dearer */
+  .m-pulse {
+    animation-timing-function: ease-in-out;
+  }
+
+  /* focus: the viewfinder, a 1px ink frame standing 4px off the control */
+  :focus-visible {
+    outline: 1px solid var(--ink-12);
+    outline-offset: 4px;
+    box-shadow: none;
+  }
+
+  /* the bar: ink 1, ruled off in ink 12 */
+  .app-header {
+    background: var(--ink-1);
+    border-bottom-color: var(--ink-12);
+    backdrop-filter: none;
+  }
+  .place-nav {
+    border: 0;
+    padding: 0;
+    gap: 1.25rem;
+    align-self: stretch;
+    border-radius: 0;
+  }
+  .place-tab {
+    height: auto;
+    align-self: stretch;
+    padding: 0;
+    border-radius: 0;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    font-size: 14px;
+    color: var(--ink-10);
+    background: none;
+  }
+  .place-tab:hover {
+    color: var(--ink-12);
+    background: none;
+  }
+  .place-tab[aria-current="page"] {
+    color: var(--ink-12);
+    background: none;
+    border-bottom-color: var(--ink-12);
+  }
+  .jump-bar {
+    background: var(--ink-1);
+    border-top-color: var(--ink-12);
+    backdrop-filter: none;
+  }
+
+  /* panes: square, a hairline, the header ruled in ink 12 */
+  .hud-pane {
+    --cut: 0px;
+    gap: 0.625rem;
+    padding: var(--pane-pad);
+    background: var(--ink-1);
+    border: 1px solid var(--ink-7);
+    border-radius: 0;
+    box-shadow: none;
+    backdrop-filter: none;
+    clip-path: none;
+    /* section enter: panes assemble in their --i order */
+    animation: m-enter var(--m-base) var(--m-arrive) backwards;
+    animation-delay: calc(var(--i, 0) * var(--m-stagger));
+  }
+  .hud-pane::before,
+  .hud-pane::after {
+    display: none;
+  }
+  .hud-pane > header {
+    align-items: baseline;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--ink-12);
+  }
+  .hud-pane > header h2 {
+    font: 600 1.1875rem/1.1 var(--font-display);
+    letter-spacing: -0.02em;
+    color: var(--ink-12);
+  }
+  .hud-pane > header > div:last-child,
+  .see-all {
+    font-family: var(--font-body);
+    font-size: 12px;
+  }
+
+  /* the wings face you straight on */
+  .wing {
+    transform: none;
+    scrollbar-color: var(--ink-7) transparent;
+  }
+
+  /* counts: square, mono; what waits on you is a filled square */
+  .pane-count {
+    min-width: 1.5rem;
+    height: 1.375rem;
+    padding: 0 0.375rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0;
+    font: 600 12px/1 var(--font-mono);
+    color: var(--ink-12);
+    background: transparent;
+    border: 1px solid var(--ink-12);
+  }
+  .pane-count[style*="--warn"],
+  .pane-count[style*="--you"] {
+    color: var(--you-ink);
+    background: var(--you-fill);
+    border-color: var(--you-fill);
+  }
+  .pane-count[style*="--bad"] {
+    color: var(--ink-1);
+    background: var(--bad);
+    border-color: var(--bad);
+  }
+
+  /* controls: the one control radius (6px), a 1px ink outline, no surface */
+  .hud-btn {
+    --cut: 0px;
+    clip-path: none;
+    border-radius: var(--radius-control);
+    font-family: var(--font-body);
+    font-weight: 500;
+    letter-spacing: normal;
+    animation: none;
+    color: var(--ink-12);
+    background: transparent;
+    border: 1px solid var(--ink-12);
+    box-shadow: none;
+  }
+  .hud-btn:hover {
+    color: var(--ink-12);
+    background: var(--ink-4);
+    border-color: var(--ink-12);
+    box-shadow: none;
+  }
+  /* picked stays picked under the pointer: the hover above would otherwise put light text on light paper */
+  .hud-btn[aria-pressed="true"],
+  .hud-btn[aria-pressed="true"]:hover {
+    color: var(--ink-1);
+    background: var(--ink-12);
+    border-color: var(--ink-12);
+  }
+  /* primary: an ink fill */
+  .hud-btn-primary,
+  .hud-btn-primary:hover {
+    color: var(--ink-1);
+    background: var(--ink-12);
+    border-color: var(--ink-12);
+    font-weight: 500;
+  }
+  .hud-btn-primary:hover {
+    background: var(--ink-11);
+  }
+  /* answer: the reply to what waits on you, the one orange control */
+  .hud-btn-answer,
+  .hud-btn-answer:hover {
+    color: var(--you-ink);
+    background: var(--you-fill);
+    border-color: var(--you-fill);
+  }
+  .hud-btn-answer:hover {
+    background: color-mix(in srgb, var(--you-fill) 88%, var(--ink-12));
+  }
+  /* state: pause and resume only */
+  .hud-btn-state,
+  .hud-btn-state:hover {
+    color: var(--you);
+    border-color: var(--you);
+    background: transparent;
+  }
+  .hud-btn-state:hover {
+    background: color-mix(in srgb, var(--you-fill) 10%, transparent);
+  }
+  /* danger: a crimson fill, white text */
+  .hud-btn-danger,
+  .hud-btn-danger:hover {
+    color: var(--white);
+    background: var(--destructive);
+    border-color: var(--destructive);
+  }
+  .hud-btn-danger:hover {
+    background: color-mix(in srgb, var(--destructive) 88%, var(--ink-12));
+  }
+  /* quiet buttons stay quiet, on the control radius */
+  [data-slot="button"][data-variant="ghost"] {
+    border-radius: var(--radius-control);
+    color: var(--ink-11);
+  }
+  [data-slot="button"][data-variant="ghost"]:hover {
+    color: var(--ink-12);
+    background: var(--ink-4);
+  }
+
+  /* segmented: cells in one ink outline, the pressed cell filled; only the outer corners take the control radius */
+  .seg {
+    gap: 0;
+    flex-wrap: nowrap;
+  }
+  .seg > .hud-btn {
+    border-radius: 0;
+  }
+  .seg > .hud-btn:first-child {
+    border-start-start-radius: var(--radius-control);
+    border-end-start-radius: var(--radius-control);
+  }
+  .seg > .hud-btn:last-child {
+    border-start-end-radius: var(--radius-control);
+    border-end-end-radius: var(--radius-control);
+  }
+  .seg > .hud-btn + .hud-btn {
+    margin-left: -1px;
+  }
+
+  /* inputs: an inset panel, a hairline */
+  [data-slot="select-trigger"],
+  [data-slot="input"],
+  [data-slot="textarea"] {
+    border-radius: var(--radius-control);
+    background: var(--ink-2);
+    border-color: var(--ink-7);
+    box-shadow: none;
+  }
+  [data-slot="select-trigger"]:hover,
+  [data-slot="input"]:hover,
+  [data-slot="textarea"]:hover {
+    border-color: var(--ink-8);
+  }
+  :is([data-slot="input"], [data-slot="textarea"], [data-slot="select-trigger"]):focus-visible {
+    border-color: var(--ink-12);
+    outline-offset: 3px;
+  }
+
+  /* the command bar's field: the field takes the viewfinder, inside the panel's padding; the text in it takes none */
+  [data-slot="command-field"]:hover {
+    border-color: var(--ink-8);
+  }
+  [data-slot="command-field"]:has(:focus-visible) {
+    border-color: var(--ink-12);
+    outline: 1px solid var(--ink-12);
+    outline-offset: 3px;
+  }
+  [data-slot="command-input"]:focus-visible,
+  [data-slot="tabs-content"]:focus-visible {
+    outline: none;
+  }
+  [data-slot="command-input-wrapper"] {
+    border-bottom-color: var(--ink-12);
+  }
+
+  /* toggles: a slide switch, squared, inset; on is an ink thumb */
+  [data-slot="switch"] {
+    width: 30px;
+    height: 16px;
+    border: 0;
+    border-radius: var(--radius-control);
+    background: var(--ink-2);
+    box-shadow: inset 0 0 0 1px var(--ink-8);
+  }
+  [data-slot="switch"][data-state="checked"] {
+    background: var(--ink-2);
+    box-shadow: inset 0 0 0 1px var(--ink-12);
+  }
+  [data-slot="switch-thumb"] {
+    width: 12px;
+    height: 12px;
+    margin-left: 2px;
+    border-radius: var(--radius-tick);
+    background: var(--ink-9);
+    transform: translateX(0);
+    transition: transform var(--m-instant) var(--m-arrive);
+  }
+  [data-slot="switch-thumb"][data-state="checked"] {
+    background: var(--ink-12);
+    transform: translateX(14px);
+  }
+
+  /* the header is calm: neutral quiet actions, and colour only on the one that's hot */
+  .hdr-act,
+  .hdr-act:hover {
+    border-color: transparent;
+    box-shadow: none;
+  }
+  .hdr-act {
+    color: var(--ink-11);
+    background: transparent;
+  }
+  .hdr-act:hover {
+    color: var(--ink-12);
+    background: var(--ink-4);
+  }
+  .hdr-act[data-hot] {
+    color: var(--you);
+    border-color: var(--you);
+    background: transparent;
+  }
+
+  /* floating surfaces: one step up, an ink hairline, square, no shadow */
+  [data-slot="select-content"],
+  [data-slot="popover-content"],
+  [data-slot="dialog-content"],
+  [data-slot="alert-dialog-content"],
+  [data-sonner-toast] {
+    border-radius: 0 !important;
+    background: var(--ink-3) !important; /* sonner's toast classes are !important */
+    border: 1px solid var(--ink-12) !important;
+    box-shadow: none !important;
+  }
+  [data-slot="select-item"] {
+    border-radius: 0;
+  }
+  [data-slot="sheet-content"] {
+    background: var(--ink-1);
+    border-color: var(--ink-12);
+    box-shadow: none;
+  }
+  [data-slot="tooltip-content"] {
+    border-radius: 0;
+    color: var(--tip-fg);
+    background: var(--tip-bg);
+    border: 0;
+    font-size: 12px;
+  }
+  [data-slot="tooltip-content"] > span > svg,
+  [data-slot="tooltip-content"] [class*="rotate-45"] {
+    background: var(--tip-bg);
+    fill: var(--tip-bg);
+  }
+  .drawer-kicker {
+    color: var(--ink-10);
+    font-weight: 500;
+  }
+
+  /* what needs you: rows, not cards; hairlines between; the state is a 2px mark at the row's edge */
+  .need-card,
+  .need-row {
+    position: relative;
+    clip-path: none;
+    border: 0;
+    border-top: 1px solid var(--ink-6);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    transition: background-color var(--m-instant);
+  }
+  li:first-child > .need-card,
+  .need-row:first-child {
+    border-top: 0;
+  }
+  .need-card {
+    padding: 0.75rem 0.5rem 0.75rem 0.875rem;
+  }
+  .need-card:hover {
+    transform: none;
+    background: var(--ink-2);
+  }
+  .need-card b {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1.35;
+  }
+  .need-edge {
+    top: 0.875rem;
+    bottom: auto;
+    height: 0.75rem;
+    width: 2px;
+    border-radius: 0;
+  }
+  .need-edge[class] {
+    background: var(--c);
+  }
+  .need-card[style*="--warn"] .need-edge {
+    background: var(--you-fill);
+  }
+  .need-card[style*="--primary"] .need-edge {
+    background: var(--ink-9);
+  }
+  .need-row {
+    padding: 0.75rem 0.5rem 0.75rem 0.875rem;
+    border-left: 0;
+  }
+  .need-row::before {
+    content: "";
+    position: absolute;
+    top: 0.875rem;
+    height: 0.75rem;
+    left: 0;
+    width: 2px;
+    background: var(--you-fill);
+  }
+  ul:has(> li > .need-card) {
+    gap: 0;
+  }
+}
+/* a drawer takes focus to hold it, not to show it */
+:root [data-slot="sheet-content"]:focus-visible {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* How far a sleeping lead dims: further on dark than on light, where the same fade drops below readable contrast. */
+:root {
+  --asleep: 0.5;
+  --asleep-card: 0.6;
+}
+:root[data-appearance="light"] {
+  --asleep: 0.78;
+  --asleep-card: 0.82;
+}
+
+/* the header's command button reads as a calm search field on desktop, in the house theme */
+@media (min-width: 1024px) {
+  :root[data-chrome="house"] .hdr-act.hdr-ask,
+  :root[data-chrome="house"] .hdr-act.hdr-ask:hover {
+    color: var(--ink-10);
+    background: var(--ink-2);
+    border-color: var(--ink-7);
+  }
+  :root[data-chrome="house"] .hdr-act.hdr-ask:hover {
+    color: var(--ink-11);
+    border-color: var(--ink-8);
+  }
+}
+
+/*
+ * Instrument, the house look (the site uses the same paper, site/public/site.css). Only what floats over content is
+ * frosted (the bar, the phone's jump bar, popovers, drawers, toasts); every resting pane is solid paper with a white
+ * edge, an inset highlight and a soft lift, so text over the moving map stays legible and an all-day dashboard doesn't
+ * pay for blur behind constant animation. Every control is a pill. Labels stay in the UI face (mono is for data only).
+ * The other house worlds keep the hairline chrome above. The paper, glass and hairline values are system.css's.
+ */
+:root[data-chrome="house"][data-theme="overhand"] {
+  .app-header,
+  .jump-bar {
+    background: var(--glass);
+    border-color: var(--hair);
+    backdrop-filter: var(--glass-blur);
+  }
+  /* resting panes: solid paper, no blur */
+  .hud-pane {
+    background: var(--pane);
+    border: 1px solid var(--glass-edge);
+    border-radius: var(--radius);
+    box-shadow: var(--glass-lift);
+    backdrop-filter: none;
+  }
+  .hud-pane > header {
+    border-bottom-color: var(--hair);
+  }
+  .pane-count {
+    border-radius: var(--radius-control);
+  }
+
+  /* rounded-sm/md compile to the control radius; here they're cards and chips, and controls take the pill below */
+  .rounded-sm {
+    border-radius: var(--radius-chip);
+  }
+  .rounded-md {
+    border-radius: var(--radius-tile);
+  }
+  /* controls: pills on raised glass; primary is ink, the answer is the one orange, danger keeps its crimson */
+  [data-slot="button"],
+  .hud-btn {
+    border-radius: var(--radius-control);
+  }
+  .hud-btn:not(.hud-btn-primary, .hud-btn-answer, .hud-btn-danger, .hud-btn-state) {
+    background: var(--glass-hi);
+    border-color: var(--ink-7);
+  }
+  .hud-btn:not(.hud-btn-primary, .hud-btn-answer, .hud-btn-danger, .hud-btn-state):hover {
+    background: var(--ink-3);
+    border-color: var(--ink-8);
+  }
+  /* picked stays picked under the pointer: the :not(…):hover just above outranks a bare [aria-pressed] */
+  .hud-btn[aria-pressed="true"],
+  .hud-btn[aria-pressed="true"]:hover,
+  .hud-btn-primary,
+  .hud-btn-primary:hover {
+    color: var(--ink-1);
+    background: var(--ink-12);
+    border-color: var(--ink-12);
+  }
+  .hud-btn-answer,
+  .hud-btn-answer:hover {
+    color: var(--you-ink);
+    background: var(--you-fill);
+    border-color: var(--you-fill);
+  }
+  [data-slot="select-trigger"],
+  [data-slot="input"] {
+    background: var(--glass-hi);
+    border-color: var(--ink-8);
+  }
+  [data-slot="textarea"] {
+    border-radius: var(--radius-site);
+    background: var(--glass-hi);
+    border-color: var(--ink-8);
+  }
+  /* the pill switch: a 32×18 track, a 14px round thumb inset 2px, travelling 14px */
+  [data-slot="switch"] {
+    width: 32px;
+    height: 18px;
+    padding: 0;
+    border-radius: var(--radius-control);
+  }
+  [data-slot="switch-thumb"] {
+    width: 14px;
+    height: 14px;
+    margin-left: 2px;
+    border-radius: var(--radius-control);
+    /* the utility's own translate would stack on the transform below */
+    translate: none;
+  }
+  [data-slot="switch-thumb"][data-state="checked"] {
+    transform: translateX(14px);
+  }
+  :focus-visible {
+    outline: 2px solid var(--ink-12);
+    outline-offset: 3px;
+  }
+  /* a drawer, a tab panel and the command field's text take focus to hold it, not to show it (as above) */
+  :is([data-slot="sheet-content"], [data-slot="tabs-content"], [data-slot="command-input"]):focus-visible {
+    outline: none;
+  }
+
+  /* settings' field groups: solid cards, like panes */
+  .field-card {
+    border-radius: var(--radius-card);
+    background: var(--pane);
+    border-color: var(--glass-edge);
+    box-shadow: var(--glass-lift);
+  }
+
+  /* floating surfaces: raised glass, rounded, lifted */
+  [data-slot="select-content"],
+  [data-slot="popover-content"],
+  [data-slot="dialog-content"],
+  [data-slot="alert-dialog-content"],
+  [data-sonner-toast] {
+    border-radius: var(--radius-card) !important;
+    background: var(--glass-hi) !important; /* sonner's toast classes are !important */
+    border: 1px solid var(--glass-edge) !important;
+    box-shadow: var(--glass-lift) !important;
+    backdrop-filter: var(--glass-blur);
+  }
+  [data-slot="select-item"] {
+    border-radius: var(--radius-inset);
+  }
+  [data-slot="sheet-content"] {
+    background: var(--glass-hi);
+    border-color: var(--hair);
+    backdrop-filter: var(--glass-blur);
+  }
+  [data-slot="tooltip-content"] {
+    border-radius: var(--radius-chip);
+  }
+  .need-card:hover {
+    border-radius: var(--radius-tile);
+  }
+}

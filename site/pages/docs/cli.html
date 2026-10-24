@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en" class="paper">
+<head>
+{{> head}}
+{{> docmeta}}
+</head>
+<body>
+{{> header}}
+<main id="main" class="docs">
+{{> dochero}}
+  <div class="wrap">
+    <section class="block hood" id="commands" aria-labelledby="h-commands">
+      <h2 id="h-commands">Commands.</h2>
+      <div>
+        {{cli}}
+        <p class="fine">This list is what <code>overhand help</code> prints. Every command exits non-zero when it fails, so scripts can rely on it. Two more, <code>overhand guard</code> and <code>overhand heavy</code>, are run by agents' hooks, never by you.</p>
+      </div>
+    </section>
+
+    <section class="block hood" id="env" aria-labelledby="h-env">
+      <h2 id="h-env">Settings from the environment.</h2>
+      <ul class="facts">
+        <li><b><code>OVERHAND_NO_START=1</code></b> The installer installs without starting {{name}}.</li>
+        <li><b><code>OVERHAND_SECRETS_FILE</code></b> Keep secrets in a file only you can read, where there's no keyring.</li>
+        <li><b><code>NO_COLOR</code></b> The installer prints without colour.</li>
+      </ul>
+    </section>
+  </div>
+{{docsNav}}
+</main>
+{{> footer}}
+</body>
+</html>

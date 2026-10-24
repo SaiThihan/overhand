@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en" class="paper">
+<head>
+{{> head}}
+{{> docmeta}}
+</head>
+<body>
+{{> header}}
+<main id="main" class="docs">
+{{> dochero}}
+  <div class="wrap">
+    <section class="block hood" id="cleanup" aria-labelledby="h-cleanup">
+      <h2 id="h-cleanup">Clean up disk.</h2>
+      <ul class="facts">
+        <li><b>Where</b> <em>{{w.sweep}}</em> in the actions menu, or <em>{{w.machineFindSpace}}</em> under Health → This machine.</li>
+        <li><b>You see it first</b> A list of what can go, with sizes and when each was last used. Nothing is removed until you press the button, and each item is checked again just before it goes.</li>
+        <li><b>What it finds</b> Caches, old agent CLI versions and agent CLIs nothing runs, local AI models and agent history long unused, Docker leftovers and old logs, finished and forgotten agent worktrees, and dependencies in worktrees that sat idle.</li>
+        <li><b>Never your work</b> Nothing with uncommitted, untracked, unpushed or stashed changes, and never one of your own checkouts without asking.</li>
+        <li><b>From a terminal</b> <code>overhand cleanup plan</code> lists, <code>overhand cleanup run</code> removes what's ticked.</li>
+      </ul>
+    </section>
+
+    <section class="block hood" id="auto" aria-labelledby="h-auto">
+      <h2 id="h-auto">Or let it run by itself.</h2>
+      <ul class="facts">
+        <li><b>Off until you choose</b> Set <code>cleanup.auto.schedule</code> to <code>daily</code> or <code>weekly</code>. It then also cleans early when free disk runs low.</li>
+        <li><b>Only when idle</b> It starts only while no agent or lead is running, and takes only the items safe to remove without you.</li>
+        <li><b>Low disk</b> When space runs short, Needs you warns first; then heavy jobs wait, and then new agents and leads don't start.</li>
+      </ul>
+    </section>
+
+    <section class="block hood" id="quiet" aria-labelledby="h-quiet">
+      <h2 id="h-quiet">Quiet mode: "I need my laptop".</h2>
+      <ul class="facts">
+        <li><b>What it does</b> {{quietMode}} Edits and targeted tests carry on, and held work starts again when it ends.</li>
+        <li><b>Turn it on</b> The Quiet mode row in the actions menu, or <code>overhand quiet 3h</code> (or <code>90m</code>, up to 72 hours). <code>overhand quiet off</code> ends it.</li>
+        <li><b>Held anyway</b> Heavy jobs also wait while the machine is busy, the battery is low, the Mac is throttling for heat, or disk is short.</li>
+        <li><b>From a script</b> <code>POST /api/quiet {"hours": 3}</code> does the same. The header shows the time left.</li>
+      </ul>
+    </section>
+
+    <section class="block hood" id="found" aria-labelledby="h-found">
+      <h2 id="h-found">What the cleanup looks at, in detail.</h2>
+      <ul class="facts">
+        <li><b>Finished worktrees</b> Agent worktrees whose branch is merged or deleted on the remote, or whose pull request was merged or closed, when they're clean.</li>
+        <li><b>Idle dependencies</b> <code>node_modules</code> and test artifacts (screenshots, <code>test-results</code>, reports) in agent worktrees idle {{cfg.cleanup.categories.worktrees.depsIdleDays}} days (<code>cleanup.categories.worktrees.depsIdleDays</code>). The agent reinstalls on its next run there.</li>
+        <li><b>Duplicate clones</b> Full clones of a remote you already have, clean and fully pushed. They're listed unticked and go only when you confirm each one; worktrees of one clone are far cheaper.</li>
+        <li><b>Old simulators</b> Simulator runtimes older than the newest per platform, listed unticked.</li>
+        <li><b>Measured, not guessed</b> Freed space is the volume's free space before and after, since <code>du</code> overcounts APFS clones.</li>
+        <li><b>Disk thresholds</b> Under {{cfg.governor.warnFreeGb}} GB free (<code>governor.warnFreeGb</code>) Needs you warns. Under {{cfg.governor.pauseHeavyBelowGb}} GB (<code>governor.pauseHeavyBelowGb</code>) heavy jobs wait. Under {{cfg.cleanup.minFreeGb}} GB (<code>cleanup.minFreeGb</code>) new agents and leads don't start.</li>
+      </ul>
+    </section>
+
+    <section class="block hood" id="governor" aria-labelledby="h-governor">
+      <h2 id="h-governor">Heavy jobs share the machine.</h2>
+      <ul class="facts">
+        <li><b>Why</b> Several agents on one laptop can bury it with screenshot sweeps, full test suites and simulators at once.</li>
+        <li><b>Light work goes through</b> The guard sorts every shell command. Edits, git, and a test run that names files or a test go straight through.</li>
+        <li><b><code>browser</code></b> Playwright, Puppeteer, Lighthouse, axe, screenshot sweeps: {{cfg.governor.slots.browser}} at a time, up to {{cfg.governor.timeoutMin.browser}} minutes.</li>
+        <li><b><code>suite</code></b> <code>bun test</code>, <code>npm test</code>, <code>pytest</code>, <code>go test ./...</code> with no file or name filter: {{cfg.governor.slots.suite}} at a time, up to {{cfg.governor.timeoutMin.suite}} minutes.</li>
+        <li><b><code>simulator</code></b> xcodebuild, <code>simctl boot</code>, Maestro, Detox, <code>expo run:ios</code>: {{cfg.governor.slots.simulator}} at a time, up to {{cfg.governor.timeoutMin.simulator}} minutes.</li>
+        <li><b><code>build</code></b> <code>bun run build</code>, <code>next build</code>, <code>cargo build</code>, <code>docker build</code>: {{cfg.governor.slots.build}} at a time, up to {{cfg.governor.timeoutMin.build}} minutes.</li>
+        <li><b><code>devserver</code></b> <code>bun run dev</code>, <code>next dev</code>, <code>expo start</code>: {{cfg.governor.slots.devserver}} at a time, up to {{cfg.governor.timeoutMin.devserver}} minutes.</li>
+        <li><b>When it waits</b> While the 1-minute load per core is over {{cfg.governor.maxLoadPerCore}}, on battery under {{cfg.governor.minBatteryPct}}%, while macOS reports thermal throttling, when disk is short, or in quiet mode.</li>
+        <li><b>What waiting means</b> The agent is told why, and to do other work and retry. Each wait is logged in Health → Guardrails.</li>
+        <li><b>When it may start</b> It runs inside <code>overhand heavy &lt;kind&gt; -- &lt;command&gt;</code>. Claude Code's hook rewrites the command; the other agents' hooks can't, so their agent is told to run the wrapped command itself.</li>
+        <li><b>The slot</b> A lock file under <code>slots/</code> holds the job's pid, so a slot whose holder died frees itself. Output passes straight through.</li>
+        <li><b>Stopped when stuck</b> The job's whole process tree is killed past its limit, or after {{cfg.governor.silentMin}} minutes printing nothing.</li>
+        <li><b>Orphaned browsers</b> Every minute the daemon stops headless browsers whose parent died and whose environment carries <code>OVERHAND_RUN</code>. Never your own.</li>
+        <li><b>Config</b> All of it is <code>governor</code> in the config: <code>slots</code>, <code>maxLoadPerCore</code>, <code>minBatteryPct</code>, <code>thermal</code>, <code>pauseHeavyBelowGb</code>, <code>warnFreeGb</code>, <code>timeoutMin</code>, <code>silentMin</code>.</li>
+        <li><b>Protected processes</b> <code>governor.protect</code> lists ports ({{name}}'s own {{cfg.governor.protect.ports}} by default), process names and Docker container name prefixes, for example <code>{"ports": [4317, 4100], "containerPrefixes": ["demo-"]}</code>.</li>
+        <li><b>What that blocks</b> <code>kill</code>, <code>pkill</code>, <code>killall</code>, <code>docker stop|rm|restart</code>, <code>compose down</code>, <code>launchctl</code>, <code>systemctl</code>, <code>pm2</code> and <code>brew services</code> commands that name one, or whose target listens on a protected port.</li>
+        <li><b>Every agent but Aider</b> The governor works through the guard's hook. Aider runs no shell commands, so it starts no heavy jobs.</li>
+      </ul>
+    </section>
+  </div>
+{{docsNav}}
+</main>
+{{> footer}}
+</body>
+</html>

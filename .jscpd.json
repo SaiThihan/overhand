@@ -1,0 +1,8 @@
+{
+  "path": ["apps", "packages", "relay", "site", "release"],
+  "format": ["typescript", "tsx", "javascript", "css"],
+  "minLines": 30,
+  "threshold": 0,
+  "reporters": ["console"],
+  "ignore": ["**/node_modules/**", "**/dist/**", "**/public/**", "**/.wrangler/**", "**/test/**", "**/*.test.ts", "**/*.test.tsx"]
+}

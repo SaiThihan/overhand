@@ -1,0 +1,26 @@
+# the image builds from source (Dockerfile), and only from what the repo tracks: everything is left out unless listed
+# below, so a running checkout's state (config, leads, devices, relay keys, logs, control/) can never reach the image
+*
+!apps
+!packages
+!site
+!relay
+!release
+!skills
+!docs
+!package.json
+!bun.lock
+!bunfig.toml
+!tsconfig.json
+!run.ts
+!test-home.ts
+!overhand.config.example.json
+!LICENSE.md
+!LICENSE-docs
+# inside those: no installed modules, build output or logs
+**/node_modules
+**/*.log
+release/out
+apps/web/dist
+site/public
+relay/public

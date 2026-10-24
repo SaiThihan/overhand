@@ -1,0 +1,12 @@
+{
+  "owner": { "name": "Alex", "keychainAccount": "alex" },
+  "accounts": ["work-max"],
+  "clients": [
+    { "name": "Honeycrust", "dir": "honeycrust", "prefix": "HONEY", "host": "github", "aliases": ["honeycrust-inc"],
+      "tracker": { "kind": "linear", "secret": "overhand-linear-honeycrust" } },
+    { "name": "Fernway", "dir": "fernway", "prefix": "FERN", "host": "github", "aliases": ["fernway"], "accounts": ["work-max"],
+      "tracker": { "kind": "jira", "secret": "overhand-jira-fernway", "site": "fernway.atlassian.net", "email": "alex@fernway.com", "project": "FERN" } }
+  ],
+  "slack": [{ "server": "slack_honeycrust", "client": "Honeycrust" }],
+  "godmode": []
+}

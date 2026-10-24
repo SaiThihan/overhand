@@ -1,0 +1,27 @@
+<a class="skip" href="#main">Skip to content</a>
+<header class="wrap bar">
+  <a class="mark" href="{{root}}" aria-label="{{name}}, home"><span>{{mark}}{{name}}</span></a>
+  <a class="beta" href="#beta" aria-label="Beta: what that means">Beta</a>
+  <nav aria-label="Site">
+    <details class="menu">
+      <summary>Made for</summary>
+      <div class="drop">{{madeFor}}</div>
+    </details>
+    <a href="{{root}}docs/">Docs</a>
+    <a href="{{root}}pricing.html">Pricing</a>
+    <a href="{{repo}}">GitHub</a>
+    <a href="https://{{relayHost}}/">Sign in</a>
+  </nav>
+  <!-- phones: the nav above is hidden, so the same places open from one Menu -->
+  <details class="menu phone">
+    <summary aria-label="Menu">Menu</summary>
+    <div class="drop">
+      {{madeFor}}
+      <a href="{{root}}docs/">Docs</a>
+      <a href="{{root}}pricing.html">Pricing</a>
+      <a href="{{repo}}">GitHub</a>
+      <a href="https://{{relayHost}}/">Sign in</a>
+    </div>
+  </details>
+  <a class="pill dark" href="{{root}}#install">Install</a>
+</header>

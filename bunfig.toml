@@ -1,0 +1,5 @@
+[test]
+# every test run gets a scratch OVERHAND_HOME, never the checkout's live state
+preload = ["./test-home.ts"]
+# a bare `bun test` keeps to the repo's own tests: agent-home holds plugin checkouts, .claude/worktrees whole repo copies
+pathIgnorePatterns = ["agent-home/**", ".claude/**"]

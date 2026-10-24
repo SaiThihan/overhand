@@ -1,0 +1,50 @@
+name: ci
+# Runs when main changes and on every pull request to main (contributors' too): main's ruleset requires this job, so a
+# pull request must never skip it. A newer push cancels the run in progress; pushes to main skip docs-only changes.
+on:
+  push:
+    branches: [main]
+    paths-ignore: ["**/*.md", "docs/**", "LICENSE.md"]
+  pull_request:
+    branches: [main]
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json # packageManager's Bun: the brand PNGs' deflate bytes are that version's
+      - uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - run: | # tests never touch a live config
+          mkdir -p "$RUNNER_TEMP/overhand-home"
+          cp overhand.config.example.json "$RUNNER_TEMP/overhand-home/overhand.config.json"
+          echo "OVERHAND_HOME=$RUNNER_TEMP/overhand-home" >> "$GITHUB_ENV"
+      # the favicons, app icons and brand kit are exactly what packages/themes/src/brand.ts draws, byte for byte
+      - run: bun run brand && git diff --exit-code -- packages/themes/brand apps/web/public site/public
+      - run: bunx tsc --noEmit
+      - run: bun run lint # the real @biomejs/biome; bare `bunx biome` fetched an unrelated package that checks nothing
+      # no copy-pasted code: 30 duplicated lines fail (.jscpd.json); tighten over time
+      - run: bunx jscpd@4.0.5 --config .jscpd.json
+      # the sweep's own checks (fonts, pane gaps, header truncation) run in a real headless Chromium
+      - run: bunx playwright-core install --with-deps chromium-headless-shell
+      # the agent sandbox's escape tests run inside real bubblewrap (packages/core/test/sandbox-escape.test.ts); Ubuntu
+      # 24.04's AppArmor blocks the unprivileged user namespaces it needs unless told not to
+      - run: |
+          sudo apt-get install -y --no-install-recommends bubblewrap
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+      - run: bun run test
+      - run: bun run --filter web build
+      # the release build, started and poked: version, the daemon on a free port with a scratch home, every
+      # /api/request/* and the Host check (release/smoke.sh runs locally too)
+      - run: bash release/smoke.sh

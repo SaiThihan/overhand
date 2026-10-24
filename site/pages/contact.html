@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en" class="paper">
+<head>
+{{> head}}
+<title>Contact {{name}}</title>
+</head>
+<body>
+{{> header}}
+<main id="main" class="wrap">
+  <section class="panel doc" aria-labelledby="title">
+    <p class="kicker">Contact</p>
+    <h1 id="title">Write to a person.</h1>
+    <!-- The site's contact address, in this one place: every Contact link on the site points at this page, so it works
+         without JavaScript. TODO(owner): confirm contact address -->
+    <p class="lede">Write to <a href="mailto:{{email}}">{{email}}</a>. A person reads every message.</p>
+    <p>Payments and refunds go through Paddle, our merchant of record, at <a href="https://paddle.net">paddle.net</a>.
+      Bugs and ideas are welcome at the same address.</p>
+    <div class="acts"><a class="pill dark" href="mailto:{{email}}">Email us <span class="arr" aria-hidden="true">→</span></a></div>
+  </section>
+</main>
+{{> footer}}
+</body>
+</html>

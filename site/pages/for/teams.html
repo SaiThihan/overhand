@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en" class="paper">
+<head>
+{{> head}}
+<title>{{name}} for a small team</title>
+<meta name="description" content="A shared backlog and routine tickets every week. With {{name}}'s Team plan, each person's machine runs its own agents, the team sees them side by side, and each question goes to whoever owns that project.">
+<link rel="canonical" href="{{url}}/for/teams.html">
+<meta property="og:image" content="{{url}}/og.png?v=2026-10-22c">
+</head>
+<body>
+{{> header}}
+<main id="main">
+  <section class="wrap hero" aria-labelledby="hook">
+    <p class="kick">{{forLine}}</p>
+    <h1 id="hook">Everyone's agents in one view. Every question to the person who owns it.</h1>
+    <p class="lede">Three people, one backlog, the same routine tickets every week. Each machine runs its own agents, and the team sees them side by side.</p>
+  </section>
+  <div class="wrap opening">
+    <div class="piece" data-piece="cast" data-max="3" data-title="The team's agents, live on sample data: each one, its project and what it's doing"></div>
+  </div>
+
+  <div class="wrap">
+    <article class="block" aria-labelledby="p1">
+      <div class="say enter">
+        <h2 id="p1">"A question sat in someone's terminal all morning."</h2>
+        <p>A question goes to its project's owner first, and to the backup as well after {{questionFallback}} minutes. Owners and backups are set per project.</p>
+      </div>
+      <div class="piece" data-piece="needs" data-max="3" data-title="Needs you, live on sample data: a question with the answer its agent recommends"></div>
+    </article>
+
+    <article class="block" aria-labelledby="p2">
+      <div class="say enter">
+        <h2 id="p2">"Who merged that?"</h2>
+        <p>{{noMerge}} On {{modeShip}}, changes to protected files still wait for a person.</p>
+      </div>
+      <div class="piece" data-piece="inflight" data-title="In flight, live on sample data: the team's pull requests with their checks"></div>
+    </article>
+  </div>
+
+  <section class="wrap facts-sec enter" aria-labelledby="shared">
+    <h2 id="shared">What the team shares, and what it doesn't.</h2>
+    <ul class="facts">
+      <li><b>Shared</b> Who's online, each project's status, questions and their answers, results and hand-offs. Links to pull requests only if you turn that on.</li>
+      <li><b>Never shared</b> Code, diffs, keys, tokens and agent transcripts. They stay on each person's machine.</li>
+    </ul>
+    <p class="fine">{{teamPlan}} is a paid plan: <a href="{{root}}pricing.html">see what it includes</a>.</p>
+  </section>
+{{> usecase}}
+</main>
+{{> footer}}
+<script type="module" src="{{root}}home.js"></script>
+<script src="{{root}}pieces.js" defer></script>
+</body>
+</html>

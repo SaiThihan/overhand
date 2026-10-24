@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en" class="paper">
+<head>
+{{> head}}
+{{> docmeta}}
+</head>
+<body>
+{{> header}}
+<main id="main" class="docs">
+{{> dochero}}
+  <div class="wrap">
+    <section class="block hood" id="accounts" aria-labelledby="h-accounts">
+      <h2 id="h-accounts">One account, one agent.</h2>
+      <ul class="facts">
+        <li><b>The agents</b> {{name}} runs {{agents}}, each headless, the way its own CLI runs.</li>
+        <li><b>An account</b> Settings → Agent accounts: which agent it runs, and the model behind it. Add as many as you have.</li>
+        <li><b>Kept apart</b> Each account is used on its own; one person's work is never spread across several of their subscriptions.</li>
+        <li><b>Models</b> Claude, Amazon Bedrock, Google Vertex AI, or a gateway such as Ollama, LiteLLM or OpenRouter, including a model running on your own computer.</li>
+      </ul>
+    </section>
+
+    <section class="block hood" id="signin" aria-labelledby="h-signin">
+      <h2 id="h-signin">Sign-ins and API keys.</h2>
+      <ul class="facts">
+        <li><b>The agent's own sign-in, no terminal</b> In Settings → Agent accounts, adding an account (or an account's sign-in button) runs that agent's own login for you: Claude Code and Codex in a folder kept for the account, Cursor Agent in the one login this computer has. <em>{{w.signInBrowser}}</em> opens its sign-in page on the device you're on, your phone too. When the agent asks for a code back, as Claude Code does, paste it into <em>{{w.signInPasteCode}}</em>. {{name}} shows <em>{{w.signInDone}}</em> once the agent's own status check says so, then makes a test call.</li>
+        <li><b>From another device</b> Codex's usual sign-in calls back to the computer it runs on, so from a phone or over Access from anywhere it uses Codex's device code instead: the app shows the code to enter on the sign-in page.</li>
+        <li><b>What {{name}} reads</b> Only the sign-in link (and a code to show) from what the agent prints. Nothing it prints is logged or kept, and the code you paste goes only to that sign-in. A sign-in still waiting after 10 minutes is stopped.</li>
+        <li><b>OpenCode</b> Its sign-in starts with a menu of providers, so it still opens in a terminal, and the app shows its command.</li>
+        <li><b>Already signed in</b> A sign-in already on this computer is reused, and so is GitHub through <code>gh</code>.</li>
+        <li><b>An API key</b> Stored in your keychain, named after its account: <code>anthropic-key-&lt;account&gt;</code>, <code>codex-key-&lt;account&gt;</code>, <code>gemini-key-&lt;account&gt;</code> or <code>cursor-key-&lt;account&gt;</code>. Gemini CLI runs on a Gemini API key.</li>
+        <li><b>Never a subscription token</b> {{name}} doesn't ask for, store or pass on the token behind a Claude plan.</li>
+      </ul>
+    </section>
+
+    <section class="block hood" id="billing" aria-labelledby="h-billing">
+      <h2 id="h-billing">How each account is paid for.</h2>
+      <ul class="facts">
+        <li><b>Plan</b> A flat subscription such as a Claude or ChatGPT plan. Its runs cost nothing extra and follow the plan's usage limits.</li>
+        <li><b>Pay-per-use</b> Charged per token: an API key, or a paid gateway.</li>
+        <li><b>Cloud</b> Charged to your own cloud bill, as with Bedrock or Vertex AI.</li>
+        <li><b>Local</b> A model on your own computer: no charge.</li>
+        <li><b>Out of usage</b> When an account's agent says it has hit a usage limit, tickets, leads and tests all skip that account until the reset the message names, and Settings says so on the account.</li>
+        <li><b>How it knows</b> From the way the account signs in: <code>claude auth status</code> names a Claude subscription. When it can't tell, Needs you asks, and Settings lets you change it.</li>
+      </ul>
+    </section>
+
+    <section class="block hood" id="backends" aria-labelledby="h-backends">
+      <h2 id="h-backends">The model behind each account.</h2>
+      <ul class="facts">
+        <li><b>Who uses what</b> Claude Code uses every backend below. Codex, OpenCode and Aider use a gateway's URL and model.</li>
+        <li><b>Claude, by its own sign-in</b> Each account gets its own Claude Code config folder, <code>agent-home/accounts/&lt;account&gt;</code> in the config folder. Signing in runs <code>claude auth login</code> with <code>CLAUDE_CONFIG_DIR</code> set to it, through Anthropic's own flow.</li>
+        <li><b>Where that login lives</b> Claude Code keeps it: a Keychain item tied to that folder on macOS, <code>.credentials.json</code> inside it on Linux. {{name}} never reads, stores or passes it on, and runs that account's agents with <code>CLAUDE_CONFIG_DIR</code> pointing there.</li>
+        <li><b>Your own plan</b> Usage counts against your Claude plan, whose limits assume one person's ordinary use. Only Claude accounts show 5-hour and weekly usage.</li>
+        <li><b>No setup token</b> {{name}} never asks for, stores or routes a token from <code>claude setup-token</code>, as <a href="https://code.claude.com/docs/en/legal-and-compliance#authentication-and-credential-use">Anthropic's terms</a> require.</li>
+        <li><b>Claude, by API key</b> A key from <a href="https://platform.claude.com">platform.claude.com</a>, stored as <code>anthropic-key-&lt;account&gt;</code> and passed as <code>ANTHROPIC_API_KEY</code>. Billed per use to your Anthropic account, under its Commercial Terms.</li>
+        <li><b>Amazon Bedrock</b> <code>CLAUDE_CODE_USE_BEDROCK=1</code> with the region (and optional AWS profile) you set. Credentials come from this machine's AWS credential chain.</li>
+        <li><b>Google Vertex AI</b> <code>CLAUDE_CODE_USE_VERTEX=1</code>, <code>CLOUD_ML_REGION</code> and <code>ANTHROPIC_VERTEX_PROJECT_ID</code>. Credentials come from gcloud's Application Default Credentials.</li>
+        <li><b>A gateway</b> Any Anthropic-compatible endpoint through <code>ANTHROPIC_BASE_URL</code>, with <code>ANTHROPIC_AUTH_TOKEN</code> from a keychain item you name, or a placeholder for local servers that take any token. Presets for Ollama, LiteLLM and OpenRouter; tested end to end with Ollama and <code>qwen3:1.7b</code>.</li>
+        <li><b>One model for every run</b> A model set on a Bedrock, Vertex or gateway account becomes <code>ANTHROPIC_MODEL</code> and pins the <code>opus</code>, <code>sonnet</code> and <code>haiku</code> aliases. A separate small model sets <code>ANTHROPIC_DEFAULT_HAIKU_MODEL</code>.</li>
+        <li><b>Checked</b> <code>overhand doctor</code> reports a gateway that doesn't answer.</li>
+        <li><b>Claude Code's own docs</b> <a href="https://code.claude.com/docs/en/amazon-bedrock">Bedrock</a>, <a href="https://code.claude.com/docs/en/google-vertex-ai">Vertex AI</a> and <a href="https://code.claude.com/docs/en/llm-gateway-connect">LLM gateways</a>.</li>
+      </ul>
+    </section>
+
+    <section class="block hood" id="cap" aria-labelledby="h-cap">
+      <h2 id="h-cap">The daily cap.</h2>
+      <ul class="facts">
+        <li><b>Only billed money</b> It counts what pay-per-use and cloud accounts are billed today. {{budgetUnknown}} {{plansLimit}}</li>
+        <li><b>Set at install</b> {{name}} starts with {{firstDayCap}} a day, unless your first account is a local model. Change it in Settings → Schedule &amp; limits.</li>
+        <li><b>When it's reached</b> New runs and leads on the accounts it counts wait for tomorrow. <a href="{{root}}under-the-hood.html#cap">How the cap works</a>.</li>
+      </ul>
+    </section>
+  </div>
+{{docsNav}}
+</main>
+{{> footer}}
+</body>
+</html>

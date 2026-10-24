@@ -1,0 +1,7 @@
+{"type":"thread.started","thread_id":"th1"}
+{"type":"turn.started"}
+{"type":"item.started","item":{"id":"item_1","type":"command_execution","command":"/bin/zsh -lc 'pnpm vitest run'","aggregated_output":"","exit_code":null,"status":"in_progress"}}
+{"type":"item.completed","item":{"id":"item_1","type":"command_execution","command":"/bin/zsh -lc 'pnpm vitest run'","aggregated_output":" ✓ src/a.test.ts (3 tests)\n\n Test Files  1 passed (1)\n      Tests  3 passed | 2 skipped (5)\n","exit_code":0,"status":"completed"}}
+{"type":"item.completed","item":{"id":"item_2","type":"command_execution","command":"/bin/zsh -lc \"pnpm lint\"","aggregated_output":"✖ 3 problems (3 errors, 0 warnings)\n","exit_code":1,"status":"failed"}}
+{"type":"item.completed","item":{"id":"item_3","type":"agent_message","text":"{\"status\":\"done\"}"}}
+{"type":"turn.completed","usage":{"input_tokens":10,"output_tokens":5}}

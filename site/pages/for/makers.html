@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en" class="paper">
+<head>
+{{> head}}
+<title>{{name}} for product people and designers</title>
+<meta name="description" content="You know what you want changed, not which command does it. Ask {{name}} in your own words, read the plan, and review the change on its preview.">
+<link rel="canonical" href="{{url}}/for/makers.html">
+<meta property="og:image" content="{{url}}/og.png?v=2026-10-22c">
+</head>
+<body>
+{{> header}}
+<main id="main">
+  <section class="wrap hero" aria-labelledby="hook">
+    <p class="kick">{{forLine}}</p>
+    <h1 id="hook">Ideas to pull requests, without living in a terminal.</h1>
+    <p class="lede">Say what you want in your own words, like "make the invite page friendlier". The agent writes a plan in plain words first and builds nothing until you say go ahead.</p>
+  </section>
+  <div class="wrap opening">
+    <div class="piece" data-piece="plan" data-title="The plan for 'make the invite page friendlier', live on sample data, with Go ahead and Change the plan"></div>
+  </div>
+
+  <div class="wrap">
+    <article class="block" aria-labelledby="p1">
+      <div class="say enter">
+        <h2 id="p1">"I don't read diffs."</h2>
+        <p>Review the change on its preview instead. Pin a note on the page, and it goes to the same agent as its next fix round.</p>
+      </div>
+      <div class="piece" data-piece="review" data-title="Reviewing a sample pull request, live: why it waits, its preview to pin notes on, what to check before merging and its proof"></div>
+    </article>
+
+    <article class="block" aria-labelledby="p2">
+      <div class="say enter">
+        <h2 id="p2">"I'm not sure what's inside the app."</h2>
+        <p>Start with a read-only check-up. It lists what's worth fixing in plain words, and any finding goes to an agent in one click.</p>
+      </div>
+      <div class="piece" data-piece="firstwin" data-title="A first win, live on sample data: one small fix ready for review, and findings one click from an agent"></div>
+    </article>
+
+    <article class="block" aria-labelledby="p3">
+      <div class="say enter">
+        <h2 id="p3">"It asks me things I can't answer."</h2>
+        <p>Most questions come with the answer the agent recommends and what happens if you're busy. A small "?" beside a word says what it means here.</p>
+      </div>
+      <div class="piece" data-piece="needs" data-max="3" data-title="A sample question, live, with what the agent recommends and what it does if you're busy"></div>
+    </article>
+  </div>
+
+  <section class="wrap facts-sec enter" aria-labelledby="start">
+    <h2 id="start">Getting started.</h2>
+    <ul class="facts">
+      <li><b>Set it up once</b> With one command, or a prompt pasted into the coding agent you already use.</li>
+      <li><b>Then, the browser</b> You ask, review and answer there.</li>
+    </ul>
+  </section>
+{{> usecase}}
+</main>
+{{> footer}}
+<script type="module" src="{{root}}home.js"></script>
+<script src="{{root}}pieces.js" defer></script>
+</body>
+</html>

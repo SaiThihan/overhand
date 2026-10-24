@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en" class="paper">
+<head>
+{{> head}}
+<title>{{name}}: stop babysitting your coding agents</title>
+<meta name="description" content="Stop babysitting your coding agents. Get your day back: they keep working, and only call you when it matters. Works with {{agents}}.">
+<link rel="canonical" href="{{url}}/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="{{name}}">
+<meta property="og:url" content="{{url}}/">
+<meta property="og:title" content="{{name}}: stop babysitting your coding agents">
+<meta property="og:description" content="Runs the agents you already use, across every project, by your rules. Only interrupts you when a decision is yours.">
+<meta property="og:image" content="{{url}}/og.png?v=2026-10-22c">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="{{url}}/og.png?v=2026-10-22c">
+<style>
+  /* The home page: the hook, the live product in one window, five pains each with a live piece, then the facts and the
+     two ways in. Sections are separated by space, never by cards on cards. Every value is a system token (system.css). */
+  /* the shared shape (.hero, .block, .facts, .enter) is site.css's; only what the home page does differently is here */
+  .hero h1 { max-width: 12em; }
+  .hero .works { margin-top: 16px; font-size: 14px; color: var(--ink-10); max-width: 48em; }
+  .hero .acts { align-items: center; margin-top: 8px; max-width: 100%; }
+  /* the home hero sits centred in one column, words and the one prompt, so no half of the screen stands empty */
+  .hero { justify-items: center; text-align: center; padding-block: clamp(72px, 12vw, 160px) clamp(48px, 8vw, 96px); }
+  .hero h1, .hero .lede { margin-inline: auto; }
+  .hero .acts { justify-content: center; }
+  .hero .ask { margin-inline: auto; text-align: start; }
+  /* the prompt you hand your agent, in full: read what you copy, and its steps one click away */
+  .ask { display: flex; align-items: center; gap: 16px; max-width: 46em; padding: 12px 8px 12px 20px; border-radius: var(--radius-inset);
+    background: var(--white); box-shadow: inset 0 0 0 1px var(--ink-6); }
+  .ask .prompt { flex: 1; min-width: 0; margin: 0; font-size: var(--t-small-size); line-height: 1.5; color: var(--ink-11); }
+  .ask .prompt a { color: var(--ink-12); text-underline-offset: .2em; }
+  .ask .pill { flex: none; }
+  @media (max-width: 520px) { .ask { flex-direction: column; align-items: stretch; padding: 16px; } }
+
+  /* the install command: one line in its own box, it scrolls inside the box rather than widening the page */
+  .cmd { display: flex; align-items: center; gap: 8px; max-width: 100%; min-height: 48px; padding: 4px 4px 4px 18px; border-radius: var(--radius-control);
+    background: var(--white); box-shadow: inset 0 0 0 1px var(--ink-6); }
+  .cmd code { flex: 1; min-width: 0; overflow-x: auto; white-space: nowrap; font: var(--t-mono-weight) 14px/1.4 var(--font-mono); color: var(--ink-12); scrollbar-width: none; }
+  .cmd button, .copy { all: unset; box-sizing: border-box; cursor: pointer; flex: none; display: inline-flex; align-items: center; justify-content: center; min-height: 40px; min-width: 76px; padding: 0 16px;
+    border-radius: var(--radius-control); background: var(--ink-12); color: var(--ink-1); font: 500 14px/1 var(--font-body); transition: transform var(--m-instant) var(--m-arrive); }
+  /* on a phone the hero's command scrolls in its box: a fade at the right edge says there's more */
+  @media (max-width: 600px) { .hero .cmd code { padding-right: 32px; mask-image: linear-gradient(to right, black calc(100% - 32px), transparent); } }
+  .cmd button:active, .copy:active, .try button:active { transform: scale(.97); }
+  .cmd button:focus-visible, .copy:focus-visible, .try button:focus-visible { outline: 2px solid var(--ink-12); outline-offset: 3px; }
+
+  /* the one live window: the real Overhand at its own size, scaled to fit (home.ts sets --s and --w); the paper shows
+     until it says it's ready, then it fades in. Under 820px wide it uses its own phone layout. */
+  .live { width: min(calc(100% - 2 * var(--gutter)), 1440px); margin: clamp(36px, 5vw, 64px) auto 0; }
+  #window { position: relative; height: calc(900px * var(--s, 1)); overflow: hidden; border-radius: var(--radius-site); background: var(--ink-1); box-shadow: var(--frame); }
+  #window iframe { position: absolute; left: 0; top: 0; width: var(--w, 1440px); height: 900px; border: 0; transform: scale(var(--s, 1)); transform-origin: 0 0;
+    opacity: 0; transition: opacity var(--m-base) var(--m-arrive); }
+  #window iframe.ready { opacity: 1; }
+  /* as the window scrolls away it zooms, slowly, toward Needs you (home.ts sets --zx and --zy to its place), handing over
+     to the section about it: scroll-driven, one transform on this wrapper, never on a phone or under reduced motion; a
+     browser without scroll-driven animations shows it still */
+  #window .zoom { position: absolute; inset: 0; transform-origin: var(--zx, 15%) var(--zy, 75%); }
+  @supports (animation-timeline: view()) {
+    @media (min-width: 820px) and (prefers-reduced-motion: no-preference) {
+      #window { view-timeline: --window block; }
+      #window .zoom { animation: zoom-in linear both; animation-timeline: --window; animation-range: exit 0% exit 70%; }
+    }
+  }
+  @keyframes zoom-in { to { transform: scale(var(--m-zoom)); } }
+  .loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--ink-10); font-size: var(--t-small-size); transition: opacity var(--m-base) var(--m-leave); }
+  .loading.gone { opacity: 0; }
+  @media (max-width: 819px) { #window { height: min(78svh, 760px); } #window iframe { width: 100%; height: 100%; transform: none; } }
+
+  .tried { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; margin-top: 16px; }
+  .try { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .try button { all: unset; box-sizing: border-box; cursor: pointer; display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border-radius: var(--radius-control);
+    background: var(--white); box-shadow: inset 0 0 0 1px var(--ink-6), var(--shadow-pill); font: 500 15px/1 var(--font-body); color: var(--ink-12); transition: transform var(--m-instant) var(--m-arrive); }
+  .try button[aria-pressed="true"] { background: var(--ink-12); color: var(--ink-1); box-shadow: var(--shadow-pill-dark); }
+  .try button[aria-disabled="true"] { cursor: default; color: var(--ink-10); box-shadow: inset 0 0 0 1px var(--ink-6); }
+  .tnote { font-size: var(--t-small-size); color: var(--ink-10); }
+
+  .plans, #install { padding-top: clamp(72px, 10vw, 144px); }
+
+  .plans .head { margin-bottom: 0; }
+  .tiers { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 clamp(24px, 4vw, 64px); margin-top: 28px; }
+  .tiers li { display: grid; gap: 6px; align-content: start; padding: 18px 0; border-top: 1px solid var(--hair); }
+  .tiers p { color: var(--ink-10); }
+  .tiers .price { color: var(--ink-12); font-weight: 600; }
+  .plans .fine { max-width: 34em; }
+  @media (max-width: 760px) { .tiers { grid-template-columns: minmax(0, 1fr); } }
+
+  .ways { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 28px; }
+  .way { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; align-content: start; padding: clamp(22px, 3vw, 32px); border-radius: var(--radius-site); background: var(--pane); box-shadow: var(--glass-lift), 0 0 0 1px var(--glass-edge); }
+  .way p { color: var(--ink-10); }
+  .way .prompt { padding: 14px 16px; border-radius: var(--radius-inset); background: var(--white); box-shadow: inset 0 0 0 1px var(--ink-6); color: var(--ink-12); font-size: var(--t-small-size); }
+  .way .copy { justify-self: start; }
+  .next { margin-top: 20px; font-size: clamp(17px, 1.4vw, 20px); color: var(--ink-11); }
+  @media (max-width: 760px) { .ways { grid-template-columns: minmax(0, 1fr); } }
+
+</style>
+</head>
+<body>
+{{> header}}
+
+<main id="main">
+  <section class="wrap hero" aria-labelledby="hook">
+    <h1 id="hook">Stop babysitting your coding agents.</h1>
+    <p class="lede">Get your day back. They keep working, and only call you when it matters.</p>
+    <!-- the prompt in full, so people see what they paste into their agent (and can read the steps it follows); the
+         command line is in #install, the header's Install -->
+    <div class="acts">
+      <div class="ask"><p class="prompt" id="prompt">Set up {{name}} from <a href="{{root}}setup.md">{{host}}/setup.md</a>. Ask me before each step.</p><button type="button" class="pill dark" data-copy="prompt">Copy for your agent</button></div>
+    </div>
+    <p class="works">{{agents}}. <a href="{{root}}docs/agents.html#accounts">Any model</a>, even local.</p>
+  </section>
+
+  <section class="live" id="try" aria-label="Try it live">
+    <div id="window">
+      <p class="loading" id="loading">Loading {{name}} on sample data…</p>
+      <div class="zoom"><iframe id="demo" data-src="{{root}}demo/?demo" title="{{name}}, live on sample data"></iframe></div>
+    </div>
+    <div class="tried">
+      <ul class="try" aria-label="Things to try in {{name}} above">
+        <li><button type="button" data-try="answer" aria-pressed="false" aria-disabled="true" aria-describedby="loading">Answer a question</button></li>
+        <li><button type="button" data-try="rules" aria-pressed="false" aria-disabled="true" aria-describedby="loading">Change a project's rules</button></li>
+        <li><button type="button" data-try="quiet" aria-pressed="false" aria-disabled="true" aria-describedby="loading">Quiet mode</button></li>
+      </ul>
+      <p class="tnote">Sample projects and people. Nothing here touches anything real.</p>
+    </div>
+  </section>
+
+  <div class="wrap" id="what">
+    <article class="block" aria-labelledby="p1">
+      <div class="say enter">
+        <h2 id="p1">I start agents, then spend my day watching terminals.</h2>
+        <p>Only what needs you reaches you: each question comes usually with a recommended answer and what happens if you're busy.</p>
+      </div>
+      <div class="piece" data-piece="needs" data-max="3" data-title="Needs you, live on sample data: a question with the answer the agent recommends"></div>
+    </article>
+
+    <article class="block" aria-labelledby="p2">
+      <div class="say enter">
+        <h2 id="p2">It said done. It wasn't.</h2>
+        <p>Every pull request comes with proof: the checks it ran and, for screen changes, before-and-after screenshots.</p>
+      </div>
+      <div class="piece" data-piece="inflight" data-title="In flight, live on sample data: each pull request with its checks and fix rounds"></div>
+    </article>
+
+    <article class="block" aria-labelledby="p3">
+      <div class="say enter">
+        <h2 id="p3">It went too far.</h2>
+        <p>You decide how far, per project: plan only, drafts, pull requests for review, or merged once your required checks pass. Protected files still stop them, and so does a daily cap on billed accounts.</p>
+      </div>
+      <div class="piece" data-piece="rules" data-title="What agents do on each project, live on sample data: one on {{modeShip}}, one moves from {{modeAct}} to {{modePropose}}"></div>
+    </article>
+
+    <article class="block" aria-labelledby="p4">
+      <div class="say enter">
+        <h2 id="p4">Too many projects, agents and accounts.</h2>
+        <p>One place for every project and every agent you use, paced to each account's limits.</p>
+      </div>
+      <div class="piece" data-piece="cast" data-max="3" data-title="The agents, live on sample data: each one, its project and what it's doing"></div>
+    </article>
+
+    <article class="block" aria-labelledby="p5">
+      <div class="say enter">
+        <h2 id="p5">I can't explain what happened.</h2>
+        <p>Updates anyone on the team can read, and a report for a client or a manager.</p>
+      </div>
+      <div class="piece" data-piece="morning" data-title="The morning update, live on sample data: what happened, in plain words"></div>
+    </article>
+  </div>
+
+  <section class="wrap also enter" id="also" aria-labelledby="also-h">
+    <h2 id="also-h">Also in {{name}}.</h2>
+    {{also}}
+  </section>
+
+  <section class="wrap facts-sec enter" aria-labelledby="safe">
+    <h2 id="safe">Safe by design.</h2>
+    <ul class="facts">
+      <li><b>On your machine</b> Your agents run here. Overhand keeps your code, keys and tokens here; only your agents reach their model. <a class="how" href="{{root}}under-the-hood.html#machine" aria-label="How it works: what stays on your machine">How <span aria-hidden="true">→</span></a></li>
+      <li><b>The guard</b> {{guardBlocks}} <a class="how" href="{{root}}under-the-hood.html#guard" aria-label="How it works: the guard, agent by agent">How <span aria-hidden="true">→</span></a></li>
+      <li><b>Merges on green</b> {{modeShip}} merges through GitHub's auto-merge, and only when every required check passes. <a class="how" href="{{root}}under-the-hood.html#ship" aria-label="How it works: Ship's safety rules">How <span aria-hidden="true">→</span></a></li>
+      <li><b>A daily cap</b> Pay-per-use and cloud agents stop at about the amount you set for the day. <a class="how" href="{{root}}under-the-hood.html#cap" aria-label="How it works: the daily cap">How <span aria-hidden="true">→</span></a></li>
+    </ul>
+  </section>
+
+  <section class="wrap plans enter" aria-labelledby="price">
+    <div class="head">
+      <h2 id="price">Free on your machine.</h2>
+      <a class="pill" href="{{root}}pricing.html">See pricing <span class="arr" aria-hidden="true">→</span></a>
+    </div>
+    {{tiers}}
+    <p class="fine">{{planTax}}</p>
+  </section>
+
+  <section class="wrap" id="install" aria-labelledby="get">
+    <h2 id="get" class="enter">Get {{name}}.</h2>
+    <div class="ways">
+      <div class="way">
+        <h3>Run one command</h3>
+        <div class="cmd"><code id="cmd2">curl -fsSL {{get}} | sh</code><button type="button" data-copy="cmd2">Copy</button></div>
+        <p>macOS and Linux. It checks the download before it installs anything.</p>
+      </div>
+      <div class="way">
+        <h3>Let your agent set it up</h3>
+        <p>Paste the prompt at the top of this page into any coding agent. Every sign-in stays your click.</p>
+        <button type="button" class="copy" data-copy="prompt">Copy the prompt</button>
+      </div>
+    </div>
+    <p class="next">It opens {{name}} in your browser. It also runs <a href="{{root}}docs/server.html">on a server</a>, and <a href="{{root}}pricing.html">Pro</a> opens it from any device.</p>
+  </section>
+</main>
+{{> footer}}
+
+<script type="module" src="{{root}}home.js"></script>
+<script src="{{root}}pieces.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,742 @@
+/* The attention map (AttentionMap.tsx). Every colour is a token or a world's material; motion is transform, opacity
+   and dash offset only. The ground is its own still layer (.map-ground); the map above it is composited apart, so a
+   breathing ring never repaints the sky. */
+.map-ground {
+  display: block;
+  pointer-events: none;
+}
+.attention-map {
+  display: block;
+  overflow: visible;
+  font-family: var(--font-mono);
+  user-select: none;
+  will-change: transform;
+}
+/* two voices: data (ticket keys, counts) in mono, words (projects, notes, your name) in the UI face */
+.attention-map text {
+  font-family: var(--font-mono);
+}
+.attention-map :is(.sector-name, .sector-meta, .anote, .you-label, .interchange-mark, .disruption text, .word) {
+  font-family: var(--font-body);
+}
+.attention-map .sector-merged {
+  font-family: var(--font-mono);
+}
+/* one agent alone, in a list: a still picture, no layer of its own */
+.attention-map.glyph {
+  will-change: auto;
+  overflow: visible;
+}
+.attention-map .ring-line {
+  fill: none;
+  stroke: var(--ink-12);
+  stroke-opacity: 0.14;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map .ring-line.dash {
+  stroke-opacity: 0.16;
+  stroke-dasharray: 2 8;
+}
+.attention-map .ring-line.faint {
+  stroke-opacity: 0.08;
+}
+.attention-map .tick {
+  stroke: var(--ink-12);
+  stroke-opacity: 0.18;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map .tick.major {
+  stroke-opacity: 0.45;
+}
+.attention-map .divider {
+  stroke: var(--ink-12);
+  stroke-opacity: 0.1;
+  stroke-dasharray: 2 6;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map .sector-name {
+  fill: var(--ink-11);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+.attention-map .sector-name.bad,
+.attention-map .sector-meta {
+  fill: var(--bad);
+}
+.attention-map .sector-merged {
+  fill: var(--ok);
+}
+.attention-map .scar {
+  fill: none;
+  stroke: var(--bad);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map .link {
+  stroke: var(--ink-12);
+  stroke-opacity: 0.12;
+  vector-effect: non-scaling-stroke;
+}
+/* the pulse along a link: one short dash travelling in to you, each link on its own clock */
+.attention-map .pulse {
+  stroke: var(--ink-12);
+  stroke-opacity: 0.7;
+  stroke-width: 2;
+  stroke-dasharray: 4 96;
+  stroke-dashoffset: 100;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  animation: map-pulse 6s steps(20) infinite;
+}
+.attention-map .trail {
+  fill: none;
+  stroke: var(--ink-12);
+  stroke-opacity: 0.22;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-dasharray: 1 5;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map .tether {
+  stroke: var(--you-fill);
+  stroke-opacity: 0.6;
+  stroke-dasharray: 2 5;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map .you-arc {
+  fill: none;
+  stroke: var(--you-fill);
+  stroke-width: 3;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map .shadow {
+  fill: #000;
+  opacity: 0.3;
+}
+.attention-map .you-face {
+  stroke: var(--ink-12);
+  stroke-opacity: 0.55;
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map .dial {
+  fill: none;
+  stroke: var(--ink-12);
+  stroke-opacity: 0.22;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map .dial.major {
+  stroke-opacity: 0.55;
+}
+.attention-map .you-num {
+  fill: var(--ink-12);
+  font-weight: 500;
+}
+.attention-map .you-num.on {
+  fill: var(--you);
+}
+.attention-map .you-count-bg {
+  fill: var(--you-fill);
+}
+.attention-map .you-count {
+  fill: var(--you-ink);
+  font-weight: 600;
+}
+.attention-map .you-label {
+  fill: var(--ink-11);
+  font-weight: 500;
+}
+
+/* agents: an object, its light, its label; the group moves (drift in, drift out) on a slow ease */
+.attention-map .ag {
+  cursor: pointer;
+  outline: none;
+  transition: transform 2.8s cubic-bezier(0.45, 0, 0.2, 1);
+}
+.attention-map .ag .hit {
+  fill: transparent;
+}
+.attention-map .obj {
+  stroke: var(--ink-12);
+  stroke-opacity: 0.3;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map .ag.idle .obj {
+  stroke-opacity: 0.14;
+}
+.attention-map .spec {
+  fill: none;
+  stroke: #fff;
+  stroke-opacity: 0.95;
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map .track {
+  fill: none;
+  stroke: var(--ink-12);
+  stroke-opacity: 0.08;
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map .prog {
+  fill: none;
+  stroke: var(--ink-12);
+  stroke-opacity: 0.8;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map .prog.you {
+  stroke: var(--you-fill);
+}
+/* a short scan runs round a working object's arc */
+.attention-map .scanarc {
+  fill: none;
+  stroke: var(--ink-12);
+  stroke-opacity: 0.4;
+  stroke-width: 2.5;
+  stroke-dasharray: 5 95;
+  vector-effect: non-scaling-stroke;
+  animation: map-scan 7s steps(50) infinite;
+}
+.attention-map .ag.waiting .light {
+  animation: map-attend 2.6s steps(8) infinite;
+}
+.attention-map .breathe-ring {
+  fill: none;
+  stroke: var(--you-fill);
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
+  /* round its own centre, which is the agent's origin: no box to measure, so no layout per frame */
+  transform-origin: 0 0;
+  animation: map-breathe 3.4s steps(20) infinite;
+}
+.attention-map .done-ring {
+  fill: none;
+  stroke: var(--ok);
+  stroke-opacity: 0.7;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  transform: rotate(-90deg);
+  animation: map-close 1.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+.attention-map .sub {
+  transition: transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.attention-map .subline {
+  stroke: var(--ink-12);
+  stroke-opacity: 0.35;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map .companion {
+  fill: var(--ink-12);
+  opacity: 0.95;
+}
+.attention-map .alabel {
+  fill: var(--ink-11);
+}
+.attention-map .alabel.you {
+  fill: var(--you);
+  font-weight: 600;
+}
+/* a named label sits on a thin halo of the page, so it reads over a line or a ring */
+.attention-map .alabel-halo {
+  fill: none;
+  stroke: var(--background);
+  stroke-opacity: 0.85;
+  stroke-linejoin: round;
+  font-weight: 600;
+}
+.attention-map .leader {
+  stroke: var(--you-fill);
+  stroke-opacity: 0.55;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map .anote {
+  fill: var(--ink-10);
+}
+/* labels: always for what waits on you, on hover or focus for the rest */
+.attention-map .lab {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms;
+}
+.attention-map .lab.named {
+  opacity: 1;
+}
+.attention-map .lab.named .anote {
+  opacity: 0;
+  transition: opacity 160ms;
+}
+.attention-map .ag:hover .lab .anote,
+.attention-map .ag:focus-visible .lab .anote,
+.attention-map .ag:hover .lab,
+.attention-map .ag:focus-visible .lab {
+  opacity: 1;
+}
+/* the one being looked at comes to the front of its neighbours' labels */
+.attention-map .ag:hover,
+.attention-map .ag:focus-visible {
+  isolation: isolate;
+}
+.attention-map .ag:focus-visible {
+  outline: none !important;
+}
+.attention-map .ag:focus-visible .hit {
+  stroke: var(--ink-12);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map .ag:hover .obj {
+  stroke-opacity: 0.8;
+}
+.attention-map .crew-chip {
+  fill: var(--ink-12);
+}
+.attention-map .crew-count {
+  fill: var(--ink-1);
+  font-weight: 600;
+}
+
+/* every motion on the map is stepped at about 8 frames a second (like the GPU layer): it reads as calm, and the
+   browser sleeps between steps instead of restyling the map every frame */
+@keyframes map-pulse {
+  0% {
+    stroke-dashoffset: 100;
+    opacity: 0.9;
+  }
+  45% {
+    stroke-dashoffset: 0;
+    opacity: 0.2;
+  }
+  46%,
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+@keyframes map-scan {
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+@keyframes map-attend {
+  50% {
+    opacity: 0.7;
+  }
+}
+@keyframes map-breathe {
+  0% {
+    opacity: 0.75;
+    transform: scale(0.85);
+  }
+  80%,
+  100% {
+    opacity: 0;
+    transform: scale(1.35);
+  }
+}
+@keyframes map-close {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* rest: nothing has changed for a minute; motion pauses where it is, and picks up on the next change */
+.attention-map.rest *,
+.attention-map.rest {
+  animation-play-state: paused !important;
+}
+
+/* still: reduced motion, the Still setting, or a hidden tab. Every state is still shown; nothing moves. */
+.attention-map.still *,
+.attention-map.still {
+  animation-play-state: paused !important;
+  transition: none !important;
+}
+.attention-map.still .breathe-ring {
+  animation: none;
+  opacity: 0.6;
+  transform: scale(1.1);
+}
+.attention-map.still .pulse,
+.attention-map.still .scanarc {
+  display: none;
+}
+.attention-map.still .done-ring {
+  animation: none;
+  stroke-dashoffset: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .attention-map * {
+    animation: none !important;
+    transition: none !important;
+  }
+  .attention-map .pulse,
+  .attention-map .scanarc {
+    display: none;
+  }
+  .attention-map .done-ring {
+    stroke-dashoffset: 0;
+  }
+  .attention-map .breathe-ring {
+    opacity: 0.6;
+  }
+}
+
+/* the GPU atmosphere sits under the map and melts into the page at its edges; while it draws, the 2D ground stands down */
+.atmosphere {
+  mask-image: radial-gradient(closest-side, #000 70%, transparent 100%);
+}
+[data-gl] .ground-2d {
+  display: none;
+}
+
+/* Instrument */
+:is(.map-ground, .attention-map) .lattice path {
+  fill: var(--ink-12);
+}
+/* your mark: the logo's square, paper while nothing waits, the one orange with your count when something does */
+.attention-map .you-mark {
+  fill: var(--ink-3);
+  stroke: var(--ink-12);
+  stroke-opacity: 0.35;
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map .you-mark.on {
+  fill: var(--you-fill);
+  stroke: none;
+}
+.attention-map .you-num.mark-on {
+  fill: var(--you-ink);
+}
+:is(.map-ground, .attention-map) .emboss {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Observatory */
+:is(.map-ground, .attention-map) .constellation {
+  color: #bcc8d8;
+}
+:is(.map-ground, .attention-map) .c-lines {
+  fill: none;
+  stroke: currentColor;
+  stroke-opacity: 0.4;
+  stroke-width: 0.8;
+  stroke-linecap: round;
+}
+:is(.map-ground, .attention-map) .c-star {
+  fill: currentColor;
+}
+:is(.map-ground, .attention-map) .c-ring {
+  fill: none;
+  stroke: currentColor;
+  stroke-opacity: 0.35;
+  stroke-width: 0.7;
+}
+.attention-map[data-world="observatory"] .dome {
+  stroke: #8fa0b6;
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map[data-world="observatory"] .panel {
+  fill: #22314a;
+  stroke: #4a5f7e;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map[data-world="observatory"] .dim .panel {
+  fill: #1b2638;
+}
+.attention-map .panel-cells {
+  stroke: #4a5f7e;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map .strut {
+  stroke: #8fa0b6;
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map .sat-body {
+  stroke: #8fa0b6;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map .moon {
+  stroke: #8fa0b6;
+  stroke-width: 0.75;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map[data-world="observatory"] .ag.idle .satellite {
+  opacity: 0.7;
+}
+
+/* Transit */
+:is(.map-ground, .attention-map) .streets {
+  stroke: #eceae3;
+  stroke-width: 1.5;
+  fill: none;
+}
+:is(.map-ground, .attention-map) .river {
+  fill: none;
+  stroke: #dce7ee;
+  stroke-width: 90;
+  stroke-linecap: round;
+}
+:is(.map-ground, .attention-map) .metro {
+  fill: none;
+  stroke-width: 15;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+:is(.map-ground, .attention-map) .metro.cut {
+  stroke-dasharray: 14 12;
+  stroke-linecap: butt;
+  opacity: 0.45;
+}
+:is(.map-ground, .attention-map) .station {
+  fill: #fff;
+  stroke: #141414;
+  stroke-width: 3;
+}
+:is(.map-ground, .attention-map) .terminus {
+  stroke-width: 15;
+}
+:is(.map-ground, .attention-map) .terminus-ring {
+  fill: none;
+  stroke: var(--ok);
+  stroke-width: 3;
+}
+:is(.map-ground, .attention-map) .disruption circle {
+  fill: var(--bad);
+  stroke: none;
+}
+:is(.map-ground, .attention-map) .disruption text {
+  fill: #fff;
+  stroke: none;
+  font-weight: 700;
+}
+.attention-map .interchange {
+  fill: #fff;
+  stroke: #141414;
+  stroke-width: 8;
+}
+.attention-map .interchange-inner {
+  fill: none;
+  stroke: #141414;
+  stroke-opacity: 0.3;
+  stroke-width: 1.5;
+}
+.attention-map .interchange-mark {
+  fill: #141414;
+  font-weight: 700;
+}
+.attention-map .train {
+  stroke: #141414;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map .train-shadow {
+  fill: #000;
+  opacity: 0.14;
+}
+.attention-map .window {
+  fill: #fff;
+  opacity: 0.9;
+}
+
+/* Koi Pond */
+:is(.map-ground, .attention-map) .step {
+  fill: #5c6663;
+  stroke: #3b4442;
+  stroke-width: 1.5;
+}
+:is(.map-ground, .attention-map) .pad {
+  fill: #5e7a4e;
+  stroke: #43593a;
+  stroke-width: 1.5;
+  opacity: 0.95;
+}
+:is(.map-ground, .attention-map) .pad.murky {
+  fill: #5a5e43;
+}
+:is(.map-ground, .attention-map) .lotus ellipse {
+  fill: #f3e6ea;
+  stroke: #d9bcc6;
+  stroke-width: 0.75;
+}
+:is(.map-ground, .attention-map) .lotus-heart {
+  fill: #e8d79a;
+}
+.attention-map .moss {
+  fill: none;
+  stroke: #b7c2a4;
+  stroke-width: 5;
+  stroke-linecap: round;
+  opacity: 0.6;
+}
+.attention-map .koi-body {
+  stroke: rgb(0 0 0 / 0.25);
+  stroke-width: 0.75;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map .koitail {
+  /* the tail swings from where it meets the body (set per fish, so no box is measured each frame) */
+  animation: map-wag 2.2s steps(8) infinite;
+}
+.attention-map .ag.idle .koitail,
+.attention-map .ag.waiting .koitail,
+.attention-map .ag.done .koitail {
+  animation-duration: 5s;
+}
+@keyframes map-wag {
+  0%,
+  100% {
+    transform: rotate(-9deg);
+  }
+  50% {
+    transform: rotate(9deg);
+  }
+}
+
+/* a teammate's hub: what waits on them is ink, never the one colour (that is only ever yours) */
+.hub-theirs {
+  --you-fill: var(--ink-12);
+  --you-ink: var(--ink-1);
+  --you: var(--ink-11);
+}
+
+/* the Team view: names are headings */
+.team-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* hubs are small maps: no labels or names on them (the card names the person, Follow opens the full list) */
+.hub-map .lab,
+.hub-map .leader,
+.hub-map .sector-name,
+.hub-map .sector-merged,
+.hub-map .you-label {
+  display: none;
+}
+/* on the team's list only what waits on you is marked in the one colour */
+.team-map .need-row:not([data-mine])::before {
+  background: var(--ink-8);
+}
+
+/* Catnap */
+.attention-map .cat .fur {
+  stroke: rgb(60 40 25 / 0.35);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map .cat .tail {
+  fill: none;
+  stroke-width: 5;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map .cat.asleep .tail {
+  stroke-width: 4;
+}
+/* at night a dark coat keeps a lamplit edge, so a black cat still reads on the walnut floor */
+:root.dark .attention-map .cat .fur {
+  stroke: rgb(243 234 223 / 0.3);
+}
+.attention-map .cat .paws {
+  stroke: rgb(60 40 25 / 0.35);
+  vector-effect: non-scaling-stroke;
+}
+.attention-map .cat .lids {
+  fill: none;
+  stroke: rgb(40 25 15 / 0.7);
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map .cat .eye {
+  fill: #2a211b;
+}
+.attention-map .cat .eye.light {
+  fill: var(--you-fill);
+}
+.attention-map .cat .glint {
+  fill: #fff;
+  opacity: 0.9;
+}
+.attention-map .cat .nose {
+  fill: #b5776a;
+}
+.attention-map .cat .collar {
+  fill: none;
+  stroke: #6b4a3a;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map .cat .bell {
+  fill: #e8dcc2;
+  stroke: #6b4a3a;
+  vector-effect: non-scaling-stroke;
+}
+.attention-map .cat .tag {
+  fill: var(--ok);
+}
+.attention-map .cat .shadow {
+  opacity: 0.18;
+}
+.attention-map[data-world="catnap"] .tuft {
+  fill: rgb(0 0 0 / 0.25);
+}
+:is(.map-ground, .attention-map) .lampshade {
+  fill: #e9c995;
+  opacity: 0.35;
+}
+/* a working cat's tail swishes, from where it meets the body (set per cat, so no box is measured each frame) */
+.attention-map .ag.working .cat .tail.swish {
+  animation: map-swish 3.2s steps(10) infinite;
+}
+@keyframes map-swish {
+  0%,
+  100% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(8deg);
+  }
+}
+
+/* Instrument in the real hour's light (map/hour.ts): a wash of the sky's colour behind the map, warm at dawn and dusk,
+   cool at night, nearly nothing by day; it glides between quarter hours. Behind the drawing, never over text. */
+.hour-light::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--hour-tint) 26%, transparent), transparent);
+}
+.attention-map[data-world="instrument"] .halo {
+  transition: opacity var(--m-slow) var(--m-arrive);
+}
+/* working lights brighten after dark; what waits on you is always lit; done rests */
+.attention-map[data-world="instrument"] .halo-working {
+  opacity: calc(0.3 + 0.6 * var(--hour-night, 0.6));
+}
+.attention-map[data-world="instrument"] .halo-waiting {
+  opacity: 0.85;
+}
+.attention-map[data-world="instrument"] .halo-done {
+  opacity: 0.35;
+}

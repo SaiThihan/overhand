@@ -1,0 +1,29 @@
+{
+  // Overhand's public site, on overhand.dev.
+  "name": "overhand-site",
+  "compatibility_date": "2026-10-01",
+  "assets": { "directory": "./public" },
+  // the landing page embeds the real dashboard in demo mode (?demo), built fresh on every deploy, and /docs/design is
+  // the design catalog (apps/design: every part of the dashboard on sample data), built the same way and never released. No page is
+  // cross-origin isolated, so a checkout's third-party iframe can open anywhere.
+  "build": {
+    "command": "cd .. && bun site/build.ts && bun run --filter web build && rm -rf site/public/demo && cp -R apps/web/dist site/public/demo && bun run --filter design build && rm -rf site/public/docs/design && mkdir -p site/public/docs && cp -R apps/design/dist site/public/docs/design"
+  },
+  "routes": [
+    { "pattern": "overhand.dev", "custom_domain": true },
+    { "pattern": "www.overhand.dev", "custom_domain": true }
+  ],
+  "workers_dev": false,
+  // staging, for testing every merge before it's public: `bunx wrangler@4.151.1 deploy --env staging` serves the same
+  // page and demo on staging.overhand.dev, kept out of search engines
+  "env": {
+    "staging": {
+      "name": "overhand-site-staging",
+      "routes": [{ "pattern": "staging.overhand.dev", "custom_domain": true }],
+      "workers_dev": false,
+      "build": {
+        "command": "cd .. && OVERHAND_STAGING=1 OVERHAND_APP=https://staging-app.overhand.dev bun site/build.ts && bun run --filter web build && rm -rf site/public/demo && cp -R apps/web/dist site/public/demo && bun run --filter design build && rm -rf site/public/docs/design && mkdir -p site/public/docs && cp -R apps/design/dist site/public/docs/design"
+      }
+    }
+  }
+}

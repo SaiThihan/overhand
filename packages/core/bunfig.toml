@@ -1,0 +1,3 @@
+[test]
+# every test run gets a scratch OVERHAND_HOME, never the checkout's live state
+preload = ["../../test-home.ts"]

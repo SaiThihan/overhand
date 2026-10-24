@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en" class="paper">
+<head>
+{{> head}}
+{{> docmeta}}
+</head>
+<body>
+{{> header}}
+<main id="main" class="docs">
+{{> dochero}}
+  <div class="wrap">
+    <section class="block hood" id="first" aria-labelledby="h-first">
+      <h2 id="h-first">Start with these.</h2>
+      <ul class="facts">
+        <li><b><code>overhand doctor</code></b> Each thing {{name}} needs, ticked or crossed, with the fix under every cross. It exits non-zero while something required is missing.</li>
+        <li><b><code>overhand status</code></b> Whether it's running, on which port and version, its last heartbeat, agents at work and free disk.</li>
+        <li><b><code>overhand logs -f</code></b> Follows its log; without <code>-f</code>, the last lines.</li>
+        <li><b>Needs you</b> {{name}} also checks itself every quarter of an hour, and a problem it finds shows there.</li>
+      </ul>
+    </section>
+
+    <section class="block hood" id="install" aria-labelledby="h-install">
+      <h2 id="h-install">Installing.</h2>
+      <ul class="facts">
+        <li><b><samp>Checksum mismatch for</samp></b> The download didn't match the release's sums, so nothing was installed. Run the installer again; if it repeats, <a href="{{root}}contact.html">tell us</a>.</li>
+        <li><b><samp>Download failed:</samp></b> The release files couldn't be reached from here. Check the connection, or a proxy in the way.</li>
+        <li><b><samp>Overhand runs on macOS and Linux; this is</samp></b> There's no package for this system.</li>
+        <li><b><samp>isn't installed yet; the setup page shows how to get it.</samp></b> <code>git</code> or <code>gh</code> is missing. Install it; {{name}} itself is installed.</li>
+        <li><b><samp>Overhand didn't start.</samp></b> The lines above it say why; <code>overhand logs</code> has the rest.</li>
+      </ul>
+    </section>
+
+    <section class="block hood" id="running" aria-labelledby="h-running">
+      <h2 id="h-running">Running.</h2>
+      <ul class="facts">
+        <li><b><samp>is in use; is Overhand already running? (overhand status)</samp></b> Something already listens on {{name}}'s port, often {{name}} itself. <code>overhand status</code> says which.</li>
+        <li><b><samp>Overhand isn't running (nothing answers on port</samp></b> Start it with <code>overhand start</code>.</li>
+        <li><b><samp>Overhand didn't come up on port</samp></b> It started but never answered. The message names its log; read it with <code>overhand logs</code>.</li>
+        <li><b><samp>No daemon log yet at</samp></b> The log appears once the login service has run; <code>overhand start</code> sets it up.</li>
+        <li><b><samp>Not set up yet: run overhand start and finish the setup in the browser</samp></b> Setup hasn't been finished; open <a href="{{localUrl}}">{{localUrl}}</a>.</li>
+      </ul>
+    </section>
+
+    <section class="block hood" id="accounts" aria-labelledby="h-accounts">
+      <h2 id="h-accounts">Accounts and tools.</h2>
+      <ul class="facts">
+        <li><b><samp>agents open pull requests and read issues through it</samp></b> The GitHub CLI isn't signed in. Run <code>gh auth login</code> yourself.</li>
+        <li><b><samp>doesn't look like an Anthropic API key</samp></b> The stored key isn't one; store a key from platform.claude.com again.</li>
+        <li><b><samp>nothing answers there: start the gateway or fix its URL</samp></b> A gateway account's address gives no answer: start the gateway, or fix its URL in Settings.</li>
+        <li><b><samp>Tailscale isn't running on this Mac.</samp></b> Open Tailscale and sign in, then try Settings → Phone again.</li>
+        <li><b>Saving a secret fails on Linux</b> There's no unlocked keyring. See <a href="install.html#linux">On Linux</a>.</li>
+      </ul>
+    </section>
+
+    <section class="block hood" id="update" aria-labelledby="h-update">
+      <h2 id="h-update">Updating.</h2>
+      <ul class="facts">
+        <li><b><samp>The update didn't install; Overhand is unchanged.</samp></b> The message ends with the command to update by hand for the way you installed.</li>
+        <li><b>Still on the old version</b> It restarts on the new one once no agent is running. To restart now: <code>overhand stop &amp;&amp; overhand start</code>.</li>
+      </ul>
+    </section>
+  </div>
+{{docsNav}}
+</main>
+{{> footer}}
+</body>
+</html>

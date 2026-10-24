@@ -1,0 +1,203 @@
+/* The public site, on the design system's tokens (packages/themes/src/system.ts): neutral paper and ink, and one
+   colour, signal orange, only for what needs you and for the mark. Atkinson Hyperlegible Next for every word, headings included; Atkinson Hyperlegible Mono
+   for data: times, counts, keys and readouts. Solid panes with a white edge and a soft lift; only the floating bar is
+   frosted. The site follows the computer's light or dark (color-scheme below), with no toggle. The ink scale and the
+   state colours (--ink-1…12, --you, --ok, --bad), the faces, radii, motion and surfaces, by day and by night, come from
+   system.css, which site/build.ts writes from packages/themes/src/system.ts. This file keeps only layout. */
+:root {
+  color-scheme: light dark;
+  /* the pages' names for the system's faces and easing */
+  --display: var(--font-body);
+  --ui: var(--font-body);
+  --mono: var(--font-mono);
+  --ease: var(--m-arrive);
+  --gutter: max(16px, 4vw);
+  /* the reading column */
+  --cw: 1180px;
+  --zoom: 1;
+  --panel-r: 28px; --card-r: var(--radius-pane);
+}
+.ink, .paper { background: var(--ink-1); color: var(--ink-12); }
+
+* { box-sizing: border-box; margin: 0; }
+html { scroll-padding-top: calc(92px * var(--zoom)); -webkit-text-size-adjust: 100%; }
+body { background: var(--ink-1); color: var(--ink-12); font: var(--t-body-weight) var(--t-body-size)/var(--t-body-line) var(--font-body); -webkit-font-smoothing: antialiased; overflow-x: clip; }
+a { color: inherit; text-underline-offset: .2em; text-decoration-thickness: 1px; }
+a:hover { text-decoration-thickness: 2px; }
+img { max-width: 100%; height: auto; display: block; }
+:focus-visible { outline: 2px solid var(--ink-12); outline-offset: 3px; }
+::selection { background: var(--ink-12); color: var(--ink-1); }
+.skip { position: absolute; left: 16px; top: -80px; z-index: 40; background: var(--ink-12); color: var(--ink-1); padding: 10px 14px; border-radius: var(--radius-tile); font-weight: 600; text-decoration: none; }
+.skip:focus { top: 12px; }
+.vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.wrap { width: min(calc(100% - 2 * var(--gutter)), var(--cw)); margin-left: auto; margin-right: auto; }
+/* very wide screens: the column grows with the screen instead of floating in it */
+@media (min-width: 2400px) { :root { --zoom: 1.5; } .wrap { zoom: 1.5; } }
+@media (min-width: 3600px) { :root { --zoom: 2; } .wrap { zoom: 2; } }
+
+/* ---------------------------------------------------------------- type */
+h1, .h1 { font: var(--t-display-weight) var(--t-display-size)/var(--t-display-line) var(--font-body); letter-spacing: var(--t-display-track); text-wrap: balance; }
+h2, .h2 { font: var(--t-h2-weight) var(--t-h2-size)/var(--t-h2-line) var(--font-body); letter-spacing: var(--t-h2-track); text-wrap: balance; }
+h3, .h3 { font: var(--t-h3-weight) var(--t-h3-size)/var(--t-h3-line) var(--font-body); letter-spacing: var(--t-h3-track); text-wrap: balance; }
+h4 { font: 600 18px/1.2 var(--font-body); letter-spacing: -.02em; }
+.lede { font-size: clamp(17px, 1.5vw, 21px); line-height: 1.45; color: var(--ink-10); max-width: 30em; }
+.muted { color: var(--ink-10); }
+.fine { margin-top: 14px; font-size: 15px; color: var(--ink-10); }
+
+/* ---------------------------------------------------------------- the mark, and the floating bar (the one frosted surface) */
+/* the lockup (packages/themes/src/brand.ts): the mark's work square is one cap height and stands on the baseline; the
+   gap is one lift. The mark is inline SVG ({{mark}}, site/build.ts), 20px beside 20px type, 19px in the bar */
+.mark { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; color: inherit; }
+.mark > span { display: inline-flex; align-items: baseline; gap: 6px; font: 700 20px/1 var(--font-body); letter-spacing: -.02em; }
+.mark svg { flex: none; }
+.bar { position: sticky; top: 12px; z-index: 20; margin-top: 12px; display: flex; align-items: center; gap: 28px; min-height: 64px; padding: 8px 8px 8px 18px; border-radius: var(--radius-pane);
+  background: var(--glass); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+  box-shadow: var(--shadow-bar); }
+.bar nav { display: flex; gap: 14px; margin-left: auto; font-size: 15px; }
+.bar nav a { display: flex; align-items: center; min-height: 44px; padding: 0 4px; color: var(--ink-10); text-decoration: none; }
+.bar nav a:hover, .bar nav a[aria-current="page"] { color: var(--ink-12); }
+.bar nav a[aria-current="page"] { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: .45em; }
+.bar .pill { min-height: 44px; white-space: nowrap; flex: none; }
+/* beta, beside the name: everything shown works, and it changes every week (the note is in the footer, #beta) */
+.bar .beta { margin-left: -22px; display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: 0 6px; text-decoration: none; font: 500 13px/1 var(--font-body); color: var(--ink-10); }
+.bar .beta:hover { color: var(--ink-12); text-decoration: underline; }
+/* "Made for": a native disclosure, no script; it closes when you pick a page */
+.bar .menu { position: relative; }
+.bar .menu summary { display: flex; align-items: center; min-height: 44px; padding: 0 4px; color: var(--ink-10); cursor: pointer; list-style: none; }
+.bar .menu summary::-webkit-details-marker { display: none; }
+.bar .menu summary::after { content: ""; width: 6px; height: 6px; margin-left: 8px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-2px) rotate(45deg); }
+.bar .menu[open] summary, .bar .menu summary:hover { color: var(--ink-12); }
+.bar .menu .drop { position: absolute; top: calc(100% + 8px); left: -12px; display: grid; min-width: 180px; padding: 8px; border-radius: var(--radius-pane);
+  background: var(--glass); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: var(--shadow-bar); }
+.bar .menu .drop a { display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: var(--radius-control); color: var(--ink-11); text-decoration: none; }
+.bar .menu .drop a:hover { background: var(--ink-2); color: var(--ink-12); }
+.bar .menu.phone { display: none; }
+@media (max-width: 720px) { .bar { gap: 6px; padding-left: 14px; } .bar .beta { margin-left: -8px; } .bar nav { display: none; } .bar .menu.phone { display: block; margin-left: auto; } .bar .menu.phone .drop { left: auto; right: -96px; background: var(--ink-3); } .bar .menu.phone summary::after { display: none; } .bar .pill { padding: 0 14px; } }
+/* the narrowest phones: the bar's pill gives up space so the name, Beta and Get fit in 320px */
+/* the smallest phones drop the Beta tag (the footer explains it) */
+@media (max-width: 359px) { .bar .beta { display: none; } .bar { gap: 8px; padding-left: 12px; } .bar .beta { margin-left: -4px; } .bar .pill { padding: 0 14px; } }
+
+/* ---------------------------------------------------------------- controls: pills; the primary is ink, the answer is the one orange */
+.pill { all: unset; box-sizing: border-box; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; padding: 0 22px; border-radius: var(--radius-control);
+  font: 500 15px/1 var(--font-body); color: var(--ink-12); background: var(--white); box-shadow: inset 0 0 0 1px var(--ink-6), var(--shadow-pill);
+  transition: transform var(--m-base) var(--m-arrive); }
+.pill:hover { transform: translateY(-1px); text-decoration: none; }
+.pill:focus-visible { outline: 2px solid var(--ink-12); outline-offset: 3px; }
+.pill.dark { background: var(--ink-12); color: var(--ink-1); box-shadow: var(--shadow-pill-dark); }
+.pill .arr { font-size: 17px; line-height: 1; }
+.acts { display: flex; flex-wrap: wrap; gap: 12px; }
+/* ---------------------------------------------------------------- panes, their heads and kickers */
+main { padding-bottom: clamp(32px, 6vh, 72px); }
+.panel { border-radius: var(--panel-r); padding: clamp(22px, 4vw, 52px); margin-top: clamp(16px, 2.4vw, 28px); background: var(--pane);
+  box-shadow: var(--glass-lift), 0 0 0 1px var(--glass-edge); }
+section[id], article[id] { scroll-margin-top: 92px; }
+.head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px 24px; margin-bottom: clamp(22px, 3vw, 34px); }
+.head > div { display: grid; gap: 10px; }
+.head p { color: var(--ink-10); font-size: clamp(16px, 1.25vw, 18px); max-width: 34em; }
+.kicker { display: flex; align-items: baseline; gap: 10px; font-size: 15px; color: var(--ink-10); }
+/* a page's opening pane */
+.intro { display: grid; gap: 18px; }
+.intro h1 { max-width: 13em; }
+
+/* ---------------------------------------------------------------- cards */
+/* one column that may shrink: a long command or name scrolls inside the card instead of widening it */
+.card { border-radius: var(--card-r); padding: clamp(20px, 2.2vw, 28px); background: var(--white); display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; align-content: start; box-shadow: inset 0 0 0 1px var(--ink-6); }
+.card p { color: var(--ink-10); }
+/* what a plan includes: a quiet list */
+.list { list-style: none; padding: 0; display: grid; gap: 8px; align-content: start; }
+.list li { position: relative; padding-left: 18px; color: var(--ink-10); font-size: 15px; }
+.list li::before { content: ""; position: absolute; left: 0; top: .62em; width: 7px; height: 7px; border-radius: var(--radius-dot); background: var(--ink-12); }
+
+/* ---------------------------------------------------------------- a live piece of the dashboard (pieces.js), on sample data */
+.piece { min-height: 160px; border-radius: var(--radius-piece); background: var(--ink-2); transition: background-color var(--m-base); }
+.piece[data-ready] { min-height: 0; background: none; }
+.piece iframe { border-radius: var(--radius-piece); }
+/* the app's own freshness line ("Slack read 12 min ago") is the app's; on the site's pieces it's noise */
+.piece [data-slack-read] { display: none; }
+/* under each piece, a quiet way to all of it: the live demo at the top of the home page */
+.piece .more { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; margin-top: 4px; padding: 0 4px; font-size: var(--t-small-size); color: var(--ink-10); text-decoration: none; }
+.piece .more:hover { color: var(--ink-12); text-decoration: underline; text-underline-offset: 3px; }
+.piece .more:focus-visible { outline: 2px solid var(--ink-12); outline-offset: 2px; border-radius: var(--radius-control); }
+/* ---------------------------------------------------------------- the pages' shape (the home page's system): a hook, plain words
+   beside live pieces, space between sections, never cards on cards. The made-for pages and Under the hood use these. */
+.hero { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: start; gap: 20px; padding-top: clamp(40px, 7vw, 96px); }
+.hero .kick { font: 500 var(--t-small-size)/1.3 var(--font-body); color: var(--ink-10); }
+.hero h1 { max-width: 14em; }
+.hero .lede { max-width: 34em; color: var(--ink-11); }
+.opening { margin-top: clamp(36px, 5vw, 64px); }
+.block { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 24px clamp(32px, 5vw, 80px); align-items: start; padding-top: clamp(72px, 10vw, 144px); }
+.block .say { display: grid; gap: 16px; }
+.block h2 { max-width: 13em; }
+.block .say p { font-size: clamp(17px, 1.4vw, 20px); color: var(--ink-11); max-width: 28em; }
+@media (max-width: 900px) { .block { grid-template-columns: minmax(0, 1fr); } }
+/* Under the hood: a heading beside its facts */
+.block.hood .facts { margin-top: 0; grid-template-columns: minmax(0, 1fr); }
+.block.hood .facts li { max-width: 36em; }
+.block.hood > .fine { grid-column: 2; margin-top: 0; }
+@media (max-width: 900px) { .block.hood > .fine { grid-column: 1; } }
+.facts-sec, .close, .also { padding-top: clamp(72px, 10vw, 144px); }
+.facts { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 clamp(24px, 4vw, 64px); margin-top: 28px; }
+.facts li { padding: 18px 0; border-top: 1px solid var(--hair); font-size: clamp(17px, 1.4vw, 20px); color: var(--ink-12); }
+/* a point: a short bold label on its own line, then one plain line (and where to read more); the label carries the ink */
+.facts li > b:first-child, .also li > b:first-child { display: block; margin-bottom: 4px; font-weight: 600; color: var(--ink-12); }
+.facts li:has(> b:first-child) { color: var(--ink-11); }
+/* "How →": a quiet way to the detail, a full-size target without moving the line */
+.how { display: inline-block; padding: 12px 6px; margin: -12px -6px -12px -4px; color: var(--ink-10); font-size: var(--t-small-size); white-space: nowrap; text-decoration: none; }
+.how:hover { color: var(--ink-12); text-decoration: underline; }
+@media (max-width: 760px) { .facts { grid-template-columns: minmax(0, 1fr); } }
+.close .acts { margin-top: 24px; }
+.others { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 20px; margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--hair); }
+.others a { display: inline-flex; align-items: center; min-height: 44px; font: var(--t-h3-weight) var(--t-h3-size)/1.1 var(--font-body); letter-spacing: var(--t-h3-track); text-decoration: none; color: var(--ink-10); }
+.others a:hover { color: var(--ink-12); text-decoration: underline; }
+.others a[aria-current="page"] { color: var(--ink-12); }
+/* the home page's "Also in Overhand": four lists of three points, by whose they are */
+.also .groups { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px clamp(24px, 3vw, 48px); margin-top: 28px; }
+.also h3 { padding-bottom: 12px; border-bottom: 1px solid var(--hair); }
+.also ul { list-style: none; padding: 0; display: grid; gap: 18px; margin-top: 16px; }
+.also li { font-size: 15px; color: var(--ink-11); }
+@media (max-width: 1060px) { .also .groups { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .also .groups { grid-template-columns: minmax(0, 1fr); } }
+/* section text enters once (home.js); without the script, or under reduced motion, it's simply there */
+.js .enter { opacity: 0; transform: translateY(var(--m-rise)); transition: opacity var(--m-base) var(--m-arrive), transform var(--m-base) var(--m-arrive); }
+.js .enter.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .js .enter { opacity: 1; transform: none; } }
+
+/* ---------------------------------------------------------------- long text: pricing notes, contact, the legal pages */
+.doc { display: grid; gap: 18px; }
+.doc > * { max-width: 58ch; }
+.doc h1 { margin-bottom: 4px; }
+.doc h2 { font-size: clamp(22px, 2.2vw, 28px); margin-top: 18px; }
+.doc p, .doc li { color: var(--ink-11); }
+.doc ul { display: grid; gap: 8px; padding-left: 1.1em; }
+.doc strong { color: var(--ink-12); font-weight: 600; }
+.draft { justify-self: start; padding: 8px 14px; border-radius: var(--radius-control); background: var(--ink-2); box-shadow: inset 0 0 0 1px var(--ink-6); font-size: 14px; color: var(--ink-11); }
+
+/* ---------------------------------------------------------------- the docs (site/pages/docs): Under the hood's shape, closer
+   together; a command sits in its own box and scrolls inside it rather than widening the page */
+.docs .hero { padding-top: clamp(32px, 5vw, 72px); }
+.docs .hero .kick a { color: inherit; }
+.docs .block, .docs .facts-sec { padding-top: clamp(48px, 6vw, 88px); }
+.docs code, .docs samp { font-family: var(--font-mono); font-size: .9em; overflow-wrap: anywhere; }
+.docs pre { margin-top: 12px; padding: 14px 18px; border-radius: var(--radius-control); background: var(--white); box-shadow: inset 0 0 0 1px var(--ink-6); overflow-x: auto; }
+.docs pre code { font-size: 14px; line-height: 1.5; white-space: pre; overflow-wrap: normal; color: var(--ink-12); }
+.docs .facts li > b:first-child a { color: inherit; }
+.docs .others { margin-top: clamp(48px, 6vw, 88px); }
+.docs .others a { font: 500 16px/1.2 var(--font-body); letter-spacing: 0; }
+.cli { display: grid; grid-template-columns: minmax(0, max-content) minmax(0, 1fr); gap: 0 32px; }
+.cli dt, .cli dd { padding: 14px 0; border-top: 1px solid var(--hair); }
+.cli dt code { font-size: 15px; color: var(--ink-12); }
+.cli dd { color: var(--ink-11); }
+@media (max-width: 760px) { .cli { grid-template-columns: minmax(0, 1fr); } .cli dd { padding-top: 0; border-top: 0; } }
+
+/* ---------------------------------------------------------------- footer */
+.foot { border-top: 1px solid var(--hair); margin-top: clamp(24px, 4vw, 48px); padding-top: 32px; padding-bottom: 48px; display: grid; grid-template-columns: 1.4fr repeat(3, 1fr); gap: 32px; }
+.foot p { color: var(--ink-10); font-size: 15px; max-width: 32ch; margin-top: 4px; }
+.foot nav { display: grid; align-content: start; }
+.foot nav h2 { font: 600 15px/1 var(--font-body); letter-spacing: -.01em; margin-bottom: 8px; }
+.foot nav a { display: flex; align-items: center; min-height: 36px; color: var(--ink-11); text-decoration: none; font-size: 15px; }
+.foot nav a:hover, .foot nav a[aria-current="page"] { color: var(--ink-12); text-decoration: underline; }
+.foot .maker { grid-column: 1 / -1; font-size: 13px; max-width: 64ch; }
+.foot .legal { grid-column: 1 / -1; padding-top: 18px; border-top: 1px solid var(--hair); font-size: 13px; max-width: 64ch; }
+@media (max-width: 760px) { .foot { grid-template-columns: 1fr 1fr; } .foot .brand { grid-column: 1 / -1; } }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }

@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Overhand design system</title>
+    <meta name="description" content="Every part of Overhand in every state, on sample data." />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <script>
+      // Before any module loads: the catalog always runs the dashboard in demo mode (?demo), on the demo's sample night,
+      // so nothing here ever talks to a daemon.
+      if (!new URLSearchParams(location.search).has("demo")) history.replaceState(null, "", "?demo" + location.hash);
+    </script>
+    <link rel="stylesheet" href="fonts/instrument.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,47 @@
+{
+  "name": "overhand",
+  "version": "0.0.1",
+  "description": "Runs your coding agents across all your projects; only the calls that need you reach you.",
+  "license": "FSL-1.1-ALv2",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/craftly-io/overhand.git"
+  },
+  "engines": {
+    "bun": ">=1.3"
+  },
+  "packageManager": "bun@1.3.11",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "setup": "bun packages/core/src/setup-cli.ts",
+    "daemon": "bun run.ts daemon",
+    "plan": "bun run.ts plan",
+    "work": "bun run.ts work",
+    "test": "bun test ./release ./relay ./packages ./apps ./site",
+    "check": "tsc --noEmit",
+    "build": "bun run --filter web build",
+    "shots": "bun release/shots.ts",
+    "build:css": "bun packages/themes/build-css.ts",
+    "brand": "bun packages/themes/build-brand.ts",
+    "lint": "biome check --error-on-warnings ."
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.15",
+    "@happy-dom/global-registrator": "21.0.4",
+    "@types/bun": "^1.4.3",
+    "playwright-core": "1.63.0",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "zod": "^4.6.7",
+    "@overhand/contract": "workspace:*",
+    "@overhand/core": "workspace:*"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*",
+    "relay",
+    "site"
+  ]
+}

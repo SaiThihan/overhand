@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en" class="paper">
+<head>
+{{> head}}
+{{> docmeta}}
+</head>
+<body>
+{{> header}}
+<main id="main" class="docs">
+{{> dochero}}
+  <div class="wrap">
+    <section class="block hood" id="setup" aria-labelledby="h-setup">
+      <h2 id="h-setup">Set up a team.</h2>
+      <ul class="facts">
+        <li><b>Each person runs their own</b> Everyone on the team runs {{name}} on their own computer, linked as on <a href="anywhere.html">Access from anywhere</a>.</li>
+        <li><b>Settings → Team</b> Create the team, invite people with a link, give roles, set each project's owner and backup, see your seats, and choose whether your results share pull request links.</li>
+        <li><b>Roles</b> The owner holds the {{teamPlan}} plan. Admins invite and remove people and set project owners. Members see the team, answer, claim, comment and hand off.</li>
+        <li><b>The plan</b> {{teamPlan}} is priced per seat; see <a href="{{root}}pricing.html">Pricing</a>.</li>
+      </ul>
+    </section>
+
+    <section class="block hood" id="together" aria-labelledby="h-together">
+      <h2 id="h-together">Working side by side.</h2>
+      <ul class="facts">
+        <li><b>Me and Team</b> Now gets a switch between your own view and the team's, where each person has their own rings and only what waits on you is orange.</li>
+        <li><b>Follow someone</b> Click a face in the header.</li>
+        <li><b>Claim it</b> <em>{{w.teamOnIt}}</em> says you've got an item, so nobody does it twice.</li>
+        <li><b>Hand it off</b> Drag an item onto a teammate, or use <em>{{w.teamHandOff}}</em>. It waits in their crew until they give it to an agent.</li>
+        <li><b>Mention</b> @name in a comment notifies that one person.</li>
+      </ul>
+    </section>
+
+    <section class="block hood" id="questions" aria-labelledby="h-questions">
+      <h2 id="h-questions">Questions find their person.</h2>
+      <ul class="facts">
+        <li><b>The project's owner first</b> An agent's question goes to its project's owner. After {{questionFallback}} minutes without an answer it goes to the backup too.</li>
+        <li><b>Only metadata</b> The team sees status, questions, results and hand-offs, never code, diffs, keys or transcripts. <a href="{{root}}under-the-hood.html#relay">What the relay keeps on Team</a>.</li>
+        <li><b>In depth</b> How teams work, what is shared, security and cost: <a href="{{repo}}/blob/main/docs/teams.md">docs/teams.md</a>.</li>
+      </ul>
+    </section>
+  </div>
+{{docsNav}}
+</main>
+{{> footer}}
+</body>
+</html>

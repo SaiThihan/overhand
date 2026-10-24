@@ -1,0 +1,20 @@
+name: leakcheck
+# Every push and pull request, docs included: a client or personal name must never land in this public repo.
+# The deny-list is the PUBLIC_DENYLIST secret, so pull requests from forks (no secrets) skip it.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  leakcheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun release/leakcheck.ts
+        env:
+          PUBLIC_DENYLIST: ${{ secrets.PUBLIC_DENYLIST }}

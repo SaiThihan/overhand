@@ -1,0 +1,110 @@
+node_modules/
+agent-home/
+state.json
+.lock
+PAUSE
+logs/
+plans/
+reports/
+migrate-backup/
+.heartbeat
+.current.json
+.request-*
+runs/
+/voice/
+apps/web/public/voice/
+domains.json
+overhand.config.json
+.cleanup.json
+overhand.config.json.tmp
+.leads.json
+.usage.json
+.usage.json.tmp
+leads/
+.claude/worktrees/
+apps/web/dist/
+apps/design/dist/
+splits.json
+release/out/
+
+# wrangler local state
+.wrangler/
+
+# private words no commit may contain (release/leakcheck.ts), and the maintainers' internal notes
+.public-denylist
+docs/product-plan.md
+site/BRIEF.md
+slack-mcp.json
+
+# built into the landing page on deploy (site/wrangler.jsonc)
+site/public/demo/
+site/public/docs/design/
+# generated from site/pages by site/build.ts
+site/public/*.html
+site/public/for/
+site/public/docs/
+site/public/llms.txt
+site/public/llms-full.txt
+site/public/skill.md
+site/public/sitemap.xml
+site/public/.well-known/
+site/og/og.html
+
+# local-only: browser-tool captures and personal scripts
+.playwright-mcp/
+scripts/reclaim_space.sh
+.brief-sent
+.cleanup-auto
+.release.json
+
+# local code (loadLocalCode in packages/core/src/claude.ts) and plugins: personal, never committed
+local-code/
+plugins/
+site/public/_headers
+site/public/.assetsignore
+# temp folders a failed lead test can leave behind
+.test-lead-*/
+
+# the relay: the built dashboard it serves, and local secrets for wrangler dev
+relay/public/
+relay/.dev.vars
+.brief-milestones-at
+assigned.json
+guardrails.jsonl
+guides.json
+findings.json
+control/
+# the landing page's map, bundled from apps/web/src/map/site.tsx by site/build.ts
+site/public/map.js
+site/public/map.css
+.devices.json
+.push.json
+.relay.json
+briefs.json
+outcomes.jsonl
+rules.json
+site/public/system.css
+site/public/home.js
+site/public/setup.md
+# more daemon state written into OVERHAND_HOME (the checkout when running from source)
+calls.json
+organise.json
+first-win.json
+first-pick.json
+outward-allow.json
+team.json
+updates.json
+work-reports.json
+.pr-review.json
+.quiet
+slots/
+diagnostics/
+/proof/
+
+# generated css (site/build.ts, packages/themes); site.css is hand-written
+site/public/*.css
+!site/public/site.css
+# the daemon's own state, written into the checkout it runs from (OPS)
+.inbox-at
+.upkeep.json
+run-caches/

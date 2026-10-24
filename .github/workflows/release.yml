@@ -1,0 +1,53 @@
+# Publishes a GitHub release with every platform's package when a version tag (v1.2.3) is pushed.
+name: release
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: The tag matches package.json's version
+        run: |
+          want="v$(jq -r .version package.json)"
+          if [ "$GITHUB_REF_NAME" != "$want" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME doesn't match package.json version ($want); the binary would report the wrong version."
+            exit 1
+          fi
+      - run: bun install --frozen-lockfile
+      - run: bun release/build.ts release/out
+      - run: bash release/smoke.sh release/out/overhand-linux-x64
+      - run: gh release create "$GITHUB_REF_NAME" --generate-notes release/out/*.tar.gz release/out/SHA256SUMS
+        env:
+          GH_TOKEN: ${{ github.token }}
+  # `npx overhand`: the launcher in release/npm, at this tag's version. It downloads the public copy of the release files
+  # (get.overhand.dev/download, this release's files); a re-run skips a version npm already has. Skipped until the
+  # NPM_TOKEN secret exists. --provenance: npm shows which commit and workflow built the package (the repo is public).
+  npm:
+    needs: release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        working-directory: release/npm
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      - run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then echo "::warning::No NPM_TOKEN secret; npm skipped"; exit 0; fi
+          v="${GITHUB_REF_NAME#v}"
+          if [ "$(npm view "overhand@$v" version 2>/dev/null)" = "$v" ]; then echo "overhand@$v is already on npm"; exit 0; fi
+          cp ../../LICENSE.md .
+          npm version "$v" --no-git-tag-version
+          npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

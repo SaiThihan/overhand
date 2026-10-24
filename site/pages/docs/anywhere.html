@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en" class="paper">
+<head>
+{{> head}}
+{{> docmeta}}
+</head>
+<body>
+{{> header}}
+<main id="main" class="docs">
+{{> dochero}}
+  <div class="wrap">
+    <section class="block hood" id="tailscale" aria-labelledby="h-tailscale">
+      <h2 id="h-tailscale">Free: your phone over Tailscale.</h2>
+      <ul class="facts">
+        <li><b>Your own network</b> Settings → Phone serves {{name}} on your <a href="https://tailscale.com">Tailscale</a> network with <code>tailscale serve</code>, so only your own devices reach it.</li>
+        <li><b>Pair the phone</b> Scan the QR code or type the one-time code, valid for 10 minutes. The computer's own browser needs no pairing: <code>overhand open</code> opens it signed in.</li>
+        <li><b>Push</b> Set up an <a href="https://ntfy.sh">ntfy</a> topic (its URL in your keychain, its name under Settings → Integrations) and questions and alerts reach your phone. When your phone can reach {{name}}, a lead's question carries answer buttons that work once.</li>
+      </ul>
+    </section>
+
+    <section class="block hood" id="anywhere" aria-labelledby="h-anywhere">
+      <h2 id="h-anywhere">Pro and Team: from any device.</h2>
+      <ul class="facts">
+        <li><b>No network setup</b> Open {{relayHost}} on any device and sign in. Your browser connects straight to your computer; when the computer is off, so are your agents.</li>
+        <li><b>Push from your computer</b> Your computer encrypts each notification and sends it through your browser's own push service.</li>
+        <li><b>The plan</b> Access from anywhere and push come with <a href="{{root}}pricing.html">Pro and Team</a>. Everything on your computer works without them.</li>
+      </ul>
+    </section>
+
+    <section class="block hood" id="link" aria-labelledby="h-link">
+      <h2 id="h-link">How linking works.</h2>
+      <ul class="facts">
+        <li><b>1. Set it up</b> Settings → Phone → Access from anywhere → <em>{{w.anywhereSetUp}}</em>. Your computer makes a key of its own and opens {{relayHost}} in your browser.</li>
+        <li><b>2. Confirm it's yours</b> Sign in, then check the computer's name and key fingerprint. The relay signs a link certificate for that key and hands it back to your computer.</li>
+        <li><b>3. Only its own</b> Your computer takes the certificate only for its own key and its own one-time request.</li>
+        <li><b>4. Kept on</b> While your plan is active, your computer renews its access every few hours, and a short outage at the relay doesn't turn hosted features off.</li>
+        <li><b>What the relay sees</b> It introduces your browser to your computer and never carries the traffic. <a href="{{root}}under-the-hood.html#anywhere">How the connection is secured</a>.</li>
+      </ul>
+    </section>
+  </div>
+{{docsNav}}
+</main>
+{{> footer}}
+</body>
+</html>

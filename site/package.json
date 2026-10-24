@@ -1,0 +1,11 @@
+{
+  "name": "@overhand/site",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@overhand/contract": "workspace:*",
+    "@overhand/core": "workspace:*",
+    "@overhand/themes": "workspace:*",
+    "zod": "^4.6.7"
+  }
+}

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en" class="paper">
+<head>
+{{> head}}
+{{> docmeta}}
+</head>
+<body>
+{{> header}}
+<main id="main" class="docs">
+{{> dochero}}
+<div class="wrap">
+<section class="block hood" id="focus" aria-labelledby="h-focus">
+<h2 id="h-focus">Focus: outcomes only.</h2>
+<ul class="facts">
+<li><b>What stays</b> What needs you, what finished and what broke. What agents are saying, subagents and the day's in-between beats fold behind <em>{{w.showSteps}}</em>.</li>
+<li><b>Turn it on</b> The Focus switch in Quick settings, the F key, or <code>focus</code> in the command bar. Each browser keeps its own choice.</li>
+<li><b>Its default</b> On for a new install. An install in use before Focus existed starts with it off.</li>
+</ul>
+</section>
+<section class="block hood" id="brief" aria-labelledby="h-brief">
+<h2 id="h-brief">The brief.</h2>
+<ul class="facts">
+<li><b>Every morning</b> One notification a day, from the hour you set in Settings → Schedule &amp; limits: what merged and opened, what waits on you, and what yesterday was billed. With an <a href="https://ntfy.sh">ntfy</a> topic it reaches your phone too.</li>
+<li><b>Brief me</b> In the actions menu or the command bar, and in the header when nothing else is next. It reads where things stand aloud and writes it down.</li>
+<li><b>Stop</b> While it reads, Brief me turns into Stop. Esc, closing the briefing or leaving the page stops it as well.</li>
+</ul>
+</section>
+<section class="block hood" id="share" aria-labelledby="h-share">
+<h2 id="h-share">Share cards.</h2>
+<ul class="facts">
+<li><b>What it is</b> <em>{{w.share}}</em> in the actions menu makes an image of what got done: the night, today or the week.</li>
+<li><b>Where it goes</b> Download it, or hand it to your device's share sheet where the browser offers one.</li>
+</ul>
+</section>
+<section class="block hood" id="updates" aria-labelledby="h-updates">
+<h2 id="h-updates">Status updates and work reports.</h2>
+<ul class="facts">
+<li><b>Chat updates</b> Settings → Integrations → Status updates: each channel on Discord, Slack or Teams gets a summary of the projects you pick, on the schedule you pick. A test message checks it first.</li>
+<li><b>Work reports</b> Health → Work reports: per project, for the last week, month or any dates. Print it, or export Markdown or CSV. A weekly report can go to your channels too.</li>
+</ul>
+</section>
+<section class="block hood" id="feedback" aria-labelledby="h-feedback">
+<h2 id="h-feedback">Suggest or report.</h2>
+<ul class="facts">
+<li><b>Where</b> <em>{{w.feedback}}</em> in the actions menu, or <code>feedback</code> in the command bar.</li>
+<li><b>You see it first</b> It becomes a public GitHub issue, and the preview is exactly what goes. A diagnostics summary is yours to add. Anything private it spots stops the send until you edit it out.</li>
+<li><b>Sent by you</b> With <code>gh</code> signed in it posts as you; otherwise it opens on GitHub, filled in, for you to submit.</li>
+</ul>
+</section>
+<section class="block hood" id="new" aria-labelledby="h-new">
+<h2 id="h-new">What's new.</h2>
+<ul class="facts">
+<li><b>The list</b> <em>{{w.whatsNew}}</em> in the actions menu lists every feature, newest first, each with a link to its page here.</li>
+<li><b>Tips</b> When a feature is newer than what your browser has seen, one quiet line sits beside it: one a day at most, never on your first day, gone for good once you close it.</li>
+<li><b>Off</b> Settings → Look &amp; sound → Tips about new features.</li>
+</ul>
+</section>
+</div>
+{{docsNav}}
+</main>
+{{> footer}}
+</body>
+</html>

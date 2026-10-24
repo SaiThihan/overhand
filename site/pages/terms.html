@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en" class="paper">
+<head>
+{{> head}}
+<title>{{name}} terms</title>
+</head>
+<body>
+{{> header}}
+<main id="main" class="wrap">
+<article class="panel doc">
+  <p class="draft">Draft: needs legal review. Not in force yet.</p>
+  <h1>Terms of service</h1>
+  <p>These terms cover {{name}}'s paid hosted services (Pro and Team). The {{name}} software itself is licensed
+    separately, under the FSL-1.1 licence in its repository, and these terms don't change that licence.</p>
+
+  <h2>Who you're dealing with</h2>
+  <p>The seller is <strong>{{company}}</strong> (Finland). Our order process is conducted by our online reseller
+    <strong>Paddle.com</strong>, the merchant of record for all our orders. Paddle provides all customer service
+    inquiries and handles returns, and its buyer terms apply to the purchase.</p>
+
+  <h2>What you pay for</h2>
+  <ul>
+    <li><strong>Pro</strong>: the hosted relay that lets your browser reach the {{name}} on your computer from anywhere,
+      push notifications through the hosted page, and backup and sync once it ships.</li>
+    <li><strong>Team</strong>: the same for each seat, from two seats, plus team features as they ship.</li>
+    <li>Everything that runs on your own computer is free, and never stops working because of a payment.</li>
+  </ul>
+
+  <h2>Billing</h2>
+  <ul>
+    <li>Plans renew monthly or yearly until you cancel. You can cancel any time from the billing page; the plan runs to the
+      end of the period you paid for.</li>
+    <li>Seat changes on Team are prorated by Paddle from the day you make them.</li>
+    <li>Prices may change. A change applies from your next renewal, and we'll tell you before it does.</li>
+  </ul>
+
+  <h2>The hosted service</h2>
+  <ul>
+    <li>The relay only signs you in and connects your browser to your computer. Overhand's data flows directly
+      between them, encrypted, and doesn't pass through our servers except through Cloudflare's TURN relay when your
+      network requires it, still encrypted end to end.</li>
+    <li>We aim to keep the relay available but don't promise uninterrupted service. When it's unreachable, {{name}} on
+      your computer keeps working as usual.</li>
+    <li>Don't use the service to break the law, to attack others or to overload it on purpose. We may suspend accounts
+      that do.</li>
+  </ul>
+
+  <h2>Liability</h2>
+  <p>{{name}} runs coding agents with the credentials you give them. You're responsible for what you let them do. To
+    the extent the law allows, our liability for the hosted service is limited to what you paid for it in the last
+    twelve months.</p>
+
+  <h2>Changes and contact</h2>
+  <p>We'll post changes here and tell paying customers by email before they take effect. Questions:
+    <a href="mailto:{{email}}">{{email}}</a>; billing questions go to Paddle.</p>
+</article>
+</main>
+{{> footer}}
+</body>
+</html>

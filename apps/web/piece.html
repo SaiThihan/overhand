@@ -1,0 +1,17 @@
+<!doctype html>
+<!-- One live piece of the dashboard, framed into a page of the public site (src/piece.tsx, site/public/pieces.js). -->
+<html lang="en" data-appearance="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Overhand</title>
+    <!-- the frame sits on a pane of the site page: no page background of its own -->
+    <style>html, body { background: transparent !important; min-height: 0 !important; }</style>
+    <link rel="stylesheet" href="fonts/instrument.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/piece.tsx"></script>
+  </body>
+</html>

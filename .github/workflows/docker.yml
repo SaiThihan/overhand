@@ -1,0 +1,32 @@
+# Builds the Docker image and checks it the way a server runs it (release/docker-check.sh), on pull requests that change
+# the image or the code it runs. It publishes nothing: release/launch.ts pushes the image on a real release.
+name: docker
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - Dockerfile
+      - .dockerignore
+      - release/build.ts
+      - release/docker-check.sh
+      - .github/workflows/docker.yml
+      # what the image runs: a change to the daemon, its config or its words can break the server check too
+      - run.ts
+      - package.json
+      - bun.lock
+      - relay/package.json
+      - site/package.json
+      - packages/**
+      - apps/web/**
+concurrency:
+  group: docker-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - run: sh release/docker-check.sh

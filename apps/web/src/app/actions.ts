@@ -426,6 +426,12 @@ export function useActions() {
         await navigator.clipboard.writeText(link);
         toast(fmt(w.saidGuideCopied, { link }));
       }),
+    /** Sends a status update channel a test now (Settings, and Health beside a failed send). */
+    updateTest: (id: string, name: string) =>
+      guard(false, async () => {
+        await post("/api/updates/test", { id }, Ok);
+        toast(fmt(w.updatesTested, { name }));
+      }),
     /** Lets the daemon run git in a checkout a run flagged, after you looked and confirmed. */
     gitAllow: (dir: string) =>
       guard(false, async () => {

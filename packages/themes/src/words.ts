@@ -884,6 +884,11 @@ export const plainWords = {
   alLeadNeeds: "Question from {lead}",
   alLeadNeedsSay: "{lead} has a question for you",
   alLeadCrashed: "{lead} stopped",
+  /** A lead whose start fails before it runs (an account missing its key, a CLI refusing the repo): fix it, then again. */
+  alLeadCantStart: "{lead} can't start",
+  alLeadCantStartSay: "{lead} can't start",
+  alFixAccount: "Fix {account}",
+  leadCantStart: "Can't start on {account}: {why}",
   /** The OS sandbox can't run on this computer, and the config requires it: no run starts until that's settled. */
   alSandboxRefuse: "Agents can't start: the OS sandbox can't run here",
   alSandboxRefuseSay: "agents can't start, because the OS sandbox can't run here",

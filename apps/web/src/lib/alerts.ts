@@ -40,6 +40,8 @@ type AlertTarget =
   | { kind: "git"; dir: string }
   /** A lead that crashed out: Start it again, or open its log. */
   | { kind: "crashed"; key: string }
+  /** A lead whose start fails on `account` before it runs: fix that account, then Try again. */
+  | { kind: "cantstart"; key: string; account: string }
   /** Today's budget is used up: raise it to `usd` in one click. */
   | { kind: "raise"; usd: number }
   | { kind: "rule"; id: string; project: string }
@@ -289,6 +291,15 @@ export function computeAlerts(s: DashboardState, plan: Plan, w: Words, now: numb
           ? { assign: { project: g.project, title: `${leadName(g, s.names)}: ${reportTitle(g.inbox.text)}`, brief: g.inbox.text } }
           : {}),
         target: { kind: "lead", key: g.key },
+      });
+    if (g.supervised && !g.stopped && g.cantStart)
+      a.push({
+        sev: 3,
+        broken: true,
+        title: fmt(w.alLeadCantStart, { lead: leadName(g, s.names) }),
+        sub: g.cantStart.why,
+        say: fmt(w.alLeadCantStartSay, { lead: leadName(g, s.names) }),
+        target: { kind: "cantstart", key: g.key, account: g.cantStart.account },
       });
     if (g.supervised && g.stopped && /crashed/.test(g.reason))
       a.push({

@@ -133,6 +133,7 @@ test("alerts: a meeting within 15 minutes, a lead's question, planner notes", ()
         reason: "",
         waiting: true,
         waitingLimit: false,
+        cantStart: null,
         nextAt: 0,
         account: "work",
         inbox: { text: "# Questions\nShip on Friday?", at: NOW, open: true },
@@ -421,4 +422,32 @@ test("a new release offers Update and restart; a meeting soon offers quiet mode 
     (a) => a.target.kind === "quiet",
   );
   expect(meeting?.target).toEqual({ kind: "quiet", hours: 1 });
+});
+
+test("a lead whose start fails before it runs says why, with Fix the account and Try again", () => {
+  const base = state({});
+  const g = {
+    key: "shop",
+    label: "Online shop lead",
+    name: "",
+    project: "Online shop",
+    supervised: true,
+    onDemand: false,
+    running: false,
+    mine: true,
+    since: 0,
+    stopped: false,
+    reason: "",
+    waiting: false,
+    waitingLimit: false,
+    cantStart: { account: "work", why: "no Anthropic API key for work" },
+    nextAt: 0,
+    account: "work",
+    inbox: null,
+    open: false,
+    ask: null,
+  };
+  const card = computeAlerts({ ...base, godmode: [g] }, parsePlan([]), plainWords, NOW).find((a) => a.target.kind === "cantstart");
+  expect(card?.sub).toBe("no Anthropic API key for work");
+  expect(card?.target).toEqual({ kind: "cantstart", key: g.key, account: "work" });
 });

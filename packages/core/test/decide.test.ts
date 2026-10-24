@@ -80,6 +80,7 @@ const s = state({
       reason: "",
       waiting: true,
       waitingLimit: false,
+      cantStart: null,
       nextAt: 0,
       account: "work",
       inbox: {
